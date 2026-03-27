@@ -259,8 +259,8 @@
   <div class="stats-grid">
     <div class="stat-item reveal"><span class="stat-num">6<span class="stat-unit">回目</span></span><p class="stat-label">2025年、第6回を迎えます</p></div>
     <div class="stat-item reveal"><span class="stat-num">76<span class="stat-unit">名</span></span><p class="stat-label">第5回の参加者数</p></div>
-    <div class="stat-item reveal"><span class="stat-num">100<span class="stat-unit">名</span></span><p class="stat-label">第6回の目標参加者数</p></div>
-    <div class="stat-item reveal"><span class="stat-num">0<span class="stat-unit">円</span></span><p class="stat-label">広告費（口コミだけで集客）</p></div>
+    <div class="stat-item reveal"><span class="stat-num">100<span class="stat-unit">名</span></span><p class="stat-label">第6回の予定参加者数</p></div>
+    <div class="stat-item reveal"><span class="stat-num">10<span class="stat-unit">社</span></span><p class="stat-label">協賛メーカー（シマノ・ダイワ等）</p></div>
   </div>
 </section>
 
@@ -334,7 +334,7 @@
       <div class="feature-card reveal"><span class="feature-icon">🦑</span><h3 class="feature-title">夜のイカメタル体験</h3><p class="feature-desc">福井県敦賀沖のケンサキイカ漁場へ出航。初心者でも釣れる！道具のレンタルもあります。</p></div>
       <div class="feature-card reveal"><span class="feature-icon">🏆</span><h3 class="feature-title">釣り大会</h3><p class="feature-desc">参加者全員で競う釣り大会を開催。シマノ・ダイワ等の協賛メーカーから豪華景品を用意。</p></div>
       <div class="feature-card reveal"><span class="feature-icon">👕</span><h3 class="feature-title">オリジナルTシャツ</h3><p class="feature-desc">毎年デザインが変わるイベント限定Tシャツ。事前注文のみの受付です。お早めに。</p></div>
-      <div class="feature-card reveal"><span class="feature-icon">📸</span><h3 class="feature-title">プロ動画・写真撮影</h3><p class="feature-desc">イベントの様子はプロが動画・写真に記録してYouTubeで公開。SNS映えする思い出を。</p></div>
+      <div class="feature-card reveal"><span class="feature-icon">📸</span><h3 class="feature-title">動画・写真の記録</h3><p class="feature-desc">イベントの様子を動画・写真で記録してYouTubeで公開。あの夜の興奮をいつでも振り返れます。</p></div>
     </div>
   </div>
 </section>
@@ -444,8 +444,9 @@
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+
   // 集合写真背景
-  // ▼ 写真URLをここに入れてください（例：Googleフォトの共有リンク、imgurのURLなど）
   const HERO_PHOTO_URL = '';
   const heroBg = document.getElementById('heroBgPhoto');
   if (HERO_PHOTO_URL) {
@@ -454,7 +455,6 @@
     img.onload = () => heroBg.classList.add('loaded');
     img.src = HERO_PHOTO_URL;
   } else {
-    // 写真未設定時は暗い海グラデーションで代替
     heroBg.style.background = 'linear-gradient(180deg,#05080f 0%,#0a1628 40%,#0e2240 100%)';
     heroBg.style.opacity = '1';
   }
@@ -468,32 +468,55 @@
   }
 
   // カウントダウン（8/3 18:00 JST）
-  const eventDate=new Date('2025-08-03T18:00:00+09:00');
-  function updateCD(){
-    const diff=eventDate-new Date();
-    if(diff<=0){document.getElementById('countdown').innerHTML='<span class="cd-finished">🦑 開催中！</span>';return;}
-    const d=Math.floor(diff/86400000);
-    const h=Math.floor((diff%86400000)/3600000);
-    const m=Math.floor((diff%3600000)/60000);
-    const s=Math.floor((diff%60000)/1000);
-    document.getElementById('cd-days').textContent=String(d).padStart(2,'0');
-    document.getElementById('cd-hours').textContent=String(h).padStart(2,'0');
-    document.getElementById('cd-mins').textContent=String(m).padStart(2,'0');
-    document.getElementById('cd-secs').textContent=String(s).padStart(2,'0');
+  const eventDate = new Date('2025-08-03T18:00:00+09:00');
+  function updateCD() {
+    const now = new Date();
+    const diff = eventDate - now;
+    const cdEl = document.getElementById('countdown');
+    if (!cdEl) return;
+    if (diff <= 0) {
+      cdEl.innerHTML = '<span class="cd-finished">🦑 開催中！</span>';
+      return;
+    }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    const dEl = document.getElementById('cd-days');
+    const hEl = document.getElementById('cd-hours');
+    const mEl = document.getElementById('cd-mins');
+    const sEl = document.getElementById('cd-secs');
+    if (dEl) dEl.textContent = String(d).padStart(2, '0');
+    if (hEl) hEl.textContent = String(h).padStart(2, '0');
+    if (mEl) mEl.textContent = String(m).padStart(2, '0');
+    if (sEl) sEl.textContent = String(s).padStart(2, '0');
   }
-  updateCD(); setInterval(updateCD,1000);
+  updateCD();
+  setInterval(updateCD, 1000);
 
   // スクロールリビール
-  const obs=new IntersectionObserver(entries=>{
-    entries.forEach((e,i)=>{
-      if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*80);obs.unobserve(e.target);}
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        obs.unobserve(e.target);
+      }
     });
-  },{threshold:0.1});
-  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
-  // ライトボックス
-  function openLightbox(el){const img=el.querySelector('img');if(!img)return;document.getElementById('lightbox-img').src=img.src;document.getElementById('lightbox').classList.add('active');}
-  function closeLightbox(){document.getElementById('lightbox').classList.remove('active');}
+}); // DOMContentLoaded end
+
+// ライトボックス（グローバルスコープ必要）
+function openLightbox(el) {
+  const img = el.querySelector('img');
+  if (!img) return;
+  document.getElementById('lightbox-img').src = img.src;
+  document.getElementById('lightbox').classList.add('active');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+}
 </script>
 </body>
 </html>
