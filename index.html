@@ -165,12 +165,51 @@
 
   /* FEATURES */
   .features{background:linear-gradient(180deg,var(--deep) 0%,var(--ink) 100%)}
-  .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-top:40px}
-  .feature-card{background:rgba(14,34,64,.6);border:1px solid rgba(79,163,224,.12);border-radius:8px;padding:28px 24px;transition:border-color .3s,transform .3s;backdrop-filter:blur(4px)}
-  .feature-card:hover{border-color:rgba(79,163,224,.4);transform:translateY(-4px)}
-  .feature-icon{font-size:30px;margin-bottom:14px;display:block}
-  .feature-title{font-family:'Zen Antique Soft',serif;font-size:17px;margin-bottom:10px;color:var(--foam)}
-  .feature-desc{font-size:13px;line-height:1.9;color:var(--muted)}
+  .features-list{display:flex;flex-direction:column;gap:0;margin-top:48px}
+  .feature-row{
+    display:flex;align-items:flex-start;gap:32px;
+    padding:32px 0;
+    border-bottom:1px solid rgba(79,163,224,.08);
+    transition:background .3s;
+    position:relative;
+  }
+  .feature-row:first-child{border-top:1px solid rgba(79,163,224,.08)}
+  .feature-row:hover{background:rgba(79,163,224,.03)}
+  .feature-num{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:clamp(52px,8vw,80px);
+    line-height:1;
+    color:rgba(79,163,224,.12);
+    min-width:80px;
+    text-align:right;
+    flex-shrink:0;
+    transition:color .3s;
+    user-select:none;
+  }
+  .feature-row:hover .feature-num{color:rgba(79,163,224,.25)}
+  .feature-body{flex:1;padding-top:8px}
+  .feature-body-top{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+  .feature-tag{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:10px;letter-spacing:.4em;
+    color:var(--orange);
+    border:1px solid rgba(232,101,10,.3);
+    border-radius:999px;padding:3px 12px;
+  }
+  .feature-title{
+    font-family:'Zen Antique Soft',serif;
+    font-size:clamp(18px,3vw,24px);
+    color:var(--foam);
+    margin-bottom:10px;
+    line-height:1.3;
+  }
+  .feature-desc{font-size:14px;line-height:2;color:var(--muted);max-width:560px}
+  .feature-icon-side{
+    font-size:clamp(28px,4vw,40px);
+    flex-shrink:0;
+    opacity:.7;
+    margin-top:6px;
+  }
 
   /* OLUOLU */
   .oluolu{background:linear-gradient(135deg,var(--navy) 0%,#0a2010 100%);border-top:1px solid rgba(46,204,113,.15);border-bottom:1px solid rgba(46,204,113,.15)}
@@ -379,12 +418,57 @@
 <section class="features">
   <div class="section-inner">
     <span class="section-label reveal">HIGHLIGHTS</span>
-    <h2 class="section-title reveal">このイベントの、4つの顔。</h2>
-    <div class="features-grid">
-      <div class="feature-card reveal"><span class="feature-icon">🦑</span><h3 class="feature-title">夜のイカメタル体験</h3><p class="feature-desc">福井県敦賀沖のケンサキイカ漁場へ出航。初心者でも釣れる！道具のレンタルもあります。</p></div>
-      <div class="feature-card reveal"><span class="feature-icon">🏆</span><h3 class="feature-title">釣り大会</h3><p class="feature-desc">参加者全員で競う釣り大会を開催。シマノ・ダイワ等の協賛メーカーから豪華景品を用意。</p></div>
-      <div class="feature-card reveal"><span class="feature-icon">👕</span><h3 class="feature-title">オリジナルTシャツ</h3><p class="feature-desc">毎年デザインが変わるイベント限定Tシャツ。事前注文のみの受付です。お早めに。</p></div>
-      <div class="feature-card reveal"><span class="feature-icon">📸</span><h3 class="feature-title">動画・写真の記録</h3><p class="feature-desc">イベントの様子を動画・写真で記録してYouTubeで公開。あの夜の興奮をいつでも振り返れます。</p></div>
+    <h2 class="section-title reveal">IKA de Night、4つの体験。</h2>
+    <div class="features-list">
+
+      <div class="feature-row reveal">
+        <span class="feature-num">01</span>
+        <div class="feature-body">
+          <div class="feature-body-top">
+            <span class="feature-tag">FISHING</span>
+          </div>
+          <h3 class="feature-title">夜の海へ、出航。</h3>
+          <p class="feature-desc">福井県敦賀沖のケンサキイカ漁場まで船で出航。満天の星の下、仕掛けを落とせばイカが釣れる。釣り道具は持参でも、レンタルでも大丈夫。初心者も、ベテランも、同じ海の上。</p>
+        </div>
+        <span class="feature-icon-side">🦑</span>
+      </div>
+
+      <div class="feature-row reveal">
+        <span class="feature-num">02</span>
+        <div class="feature-body">
+          <div class="feature-body-top">
+            <span class="feature-tag">COMPETITION</span>
+          </div>
+          <h3 class="feature-title">全員参加の、釣り大会。</h3>
+          <p class="feature-desc">参加者全員で競う釣果大会を開催。シマノ・ダイワをはじめとする協賛メーカーから豪華景品が並ぶ。釣れた量だけでなく、特大サイズ賞など盛り上がる表彰が待っています。</p>
+        </div>
+        <span class="feature-icon-side">🏆</span>
+      </div>
+
+      <div class="feature-row reveal">
+        <span class="feature-num">03</span>
+        <div class="feature-body">
+          <div class="feature-body-top">
+            <span class="feature-tag">GOODS</span>
+          </div>
+          <h3 class="feature-title">その年だけの、Tシャツ。</h3>
+          <p class="feature-desc">毎年デザインが変わるイベント限定Tシャツ。協賛メーカーのロゴが入った本格仕様で、着ているだけでコミュニティの一員であることがわかる。事前注文のみ受付・数量限定。</p>
+        </div>
+        <span class="feature-icon-side">👕</span>
+      </div>
+
+      <div class="feature-row reveal">
+        <span class="feature-num">04</span>
+        <div class="feature-body">
+          <div class="feature-body-top">
+            <span class="feature-tag">MEMORY</span>
+          </div>
+          <h3 class="feature-title">あの夜は、YouTubeに残る。</h3>
+          <p class="feature-desc">イベントの様子は動画・写真で記録し、IKA de Night公式YouTubeチャンネルで公開。来年も、再来年も、あの夜の興奮をいつでも振り返ることができます。</p>
+        </div>
+        <span class="feature-icon-side">📽️</span>
+      </div>
+
     </div>
   </div>
 </section>
