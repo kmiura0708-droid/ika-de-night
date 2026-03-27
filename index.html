@@ -578,73 +578,93 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-
   // 集合写真背景
-  const HERO_PHOTO_URL = '';
-  const heroBg = document.getElementById('heroBgPhoto');
-  if (HERO_PHOTO_URL) {
-    heroBg.style.backgroundImage = `url('${HERO_PHOTO_URL}')`;
-    const img = new Image();
-    img.onload = () => heroBg.classList.add('loaded');
-    img.src = HERO_PHOTO_URL;
-  } else {
-    heroBg.style.background = 'linear-gradient(180deg,#05080f 0%,#0a1628 40%,#0e2240 100%)';
-    heroBg.style.opacity = '1';
+  var HERO_PHOTO_URL = '';
+  var heroBg = document.getElementById('heroBgPhoto');
+  if (heroBg) {
+    if (HERO_PHOTO_URL) {
+      heroBg.style.backgroundImage = "url('" + HERO_PHOTO_URL + "')";
+    } else {
+      heroBg.style.background = 'linear-gradient(180deg,#05080f 0%,#0a1628 40%,#0e2240 100%)';
+      heroBg.style.opacity = '1';
+    }
   }
 
   // 星屑
-  const starsEl = document.getElementById('stars');
-  for(let i=0;i<120;i++){
-    const s=document.createElement('div');s.className='star';
-    s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*60}%;width:${Math.random()*2+1}px;height:${Math.random()*2+1}px;animation-delay:${Math.random()*4}s;animation-duration:${2+Math.random()*3}s;opacity:${Math.random()*.6+.1}`;
-    starsEl.appendChild(s);
+  var starsEl = document.getElementById('stars');
+  if (starsEl) {
+    for (var i = 0; i < 120; i++) {
+      var s = document.createElement('div');
+      s.className = 'star';
+      s.style.left = (Math.random() * 100) + '%';
+      s.style.top = (Math.random() * 60) + '%';
+      s.style.width = (Math.random() * 2 + 1) + 'px';
+      s.style.height = s.style.width;
+      s.style.animationDelay = (Math.random() * 4) + 's';
+      s.style.animationDuration = (2 + Math.random() * 3) + 's';
+      s.style.opacity = Math.random() * 0.6 + 0.1;
+      starsEl.appendChild(s);
+    }
   }
 
-  // カウントダウン（8/3 18:00 JST）
-  const eventDate = new Date('2025-08-03T18:00:00+09:00');
+  // カウントダウン
+  var eventDate = new Date(2025, 7, 3, 18, 0, 0); // 2025年8月3日18時（ローカル時間）
+
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
   function updateCD() {
-    const now = new Date();
-    const diff = eventDate - now;
-    const cdEl = document.getElementById('countdown');
-    if (!cdEl) return;
+    var now = new Date();
+    var diff = eventDate - now;
+    var el = document.getElementById('countdown');
+    if (!el) return;
+
     if (diff <= 0) {
-      cdEl.innerHTML = '<span class="cd-finished">🦑 開催中！</span>';
+      el.innerHTML = '<span style="font-family:\'Zen Antique Soft\',serif;font-size:20px;color:#e8650a;letter-spacing:.1em">🦑 開催中！</span>';
       return;
     }
-    const d = Math.floor(diff / 86400000);
-    const h = Math.floor((diff % 86400000) / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
-    cdEl.innerHTML = `
-      <div class="cd-block"><span class="cd-num">${String(d).padStart(2,'0')}</span><span class="cd-unit">DAYS</span></div>
-      <span class="cd-sep">:</span>
-      <div class="cd-block"><span class="cd-num">${String(h).padStart(2,'0')}</span><span class="cd-unit">HOURS</span></div>
-      <span class="cd-sep">:</span>
-      <div class="cd-block"><span class="cd-num">${String(m).padStart(2,'0')}</span><span class="cd-unit">MINS</span></div>
-      <span class="cd-sep">:</span>
-      <div class="cd-block"><span class="cd-num">${String(s).padStart(2,'0')}</span><span class="cd-unit">SECS</span></div>
-    `;
+
+    var d = Math.floor(diff / 86400000);
+    var h = Math.floor((diff % 86400000) / 3600000);
+    var m = Math.floor((diff % 3600000) / 60000);
+    var s = Math.floor((diff % 60000) / 1000);
+
+    var numStyle = 'font-family:\'Bebas Neue\',sans-serif;font-size:clamp(36px,6vw,52px);line-height:1;color:#c8e8ff;display:block;-webkit-text-fill-color:#c8e8ff;';
+    var unitStyle = 'font-size:10px;letter-spacing:.2em;color:#7a9bb5;margin-top:4px;display:block;';
+    var blockStyle = 'display:flex;flex-direction:column;align-items:center;background:rgba(14,34,64,.7);border:1px solid rgba(79,163,224,.2);border-radius:8px;padding:14px 20px 10px;min-width:70px;';
+    var sepStyle = 'font-family:\'Bebas Neue\',sans-serif;font-size:36px;color:rgba(79,163,224,.3);padding-bottom:10px;';
+
+    el.innerHTML =
+      '<div style="' + blockStyle + '"><span style="' + numStyle + '">' + pad(d) + '</span><span style="' + unitStyle + '">DAYS</span></div>' +
+      '<span style="' + sepStyle + '">:</span>' +
+      '<div style="' + blockStyle + '"><span style="' + numStyle + '">' + pad(h) + '</span><span style="' + unitStyle + '">HOURS</span></div>' +
+      '<span style="' + sepStyle + '">:</span>' +
+      '<div style="' + blockStyle + '"><span style="' + numStyle + '">' + pad(m) + '</span><span style="' + unitStyle + '">MINS</span></div>' +
+      '<span style="' + sepStyle + '">:</span>' +
+      '<div style="' + blockStyle + '"><span style="' + numStyle + '">' + pad(s) + '</span><span style="' + unitStyle + '">SECS</span></div>';
   }
+
   updateCD();
   setInterval(updateCD, 1000);
 
   // スクロールリビール
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach((e, i) => {
-      if (e.isIntersecting) {
-        setTimeout(() => e.target.classList.add('visible'), i * 80);
-        obs.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  var reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e, i) {
+        if (e.isIntersecting) {
+          setTimeout(function() { e.target.classList.add('visible'); }, i * 80);
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(function(el) { obs.observe(el); });
+  } else {
+    reveals.forEach(function(el) { el.classList.add('visible'); });
+  }
 
-}); // DOMContentLoaded end
-
-// ライトボックス（グローバルスコープ必要）
+// ライトボックス
 function openLightbox(el) {
-  const img = el.querySelector('img');
+  var img = el.querySelector('img');
   if (!img) return;
   document.getElementById('lightbox-img').src = img.src;
   document.getElementById('lightbox').classList.add('active');
