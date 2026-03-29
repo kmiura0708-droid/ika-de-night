@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IKA de Night｜船振り分け管理（共有版）</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--bg2:#f5f5f3;--bg3:#ebebea;
+  --txt:#1a1a18;--txt2:#6b6b68;--txt3:#9b9b98;
+  --bdr:rgba(0,0,0,0.12);--bdr2:rgba(0,0,0,0.22);
+  --info-bg:#e6f1fb;--info-tx:#0c447c;--info-br:#b5d4f4;
+  --suc-bg:#eaf3de;--suc-tx:#27500a;--suc-br:#c0dd97;
+  --warn-bg:#faeeda;--warn-tx:#633806;--warn-br:#fac775;
+  --err-bg:#fcebeb;--err-tx:#a32d2d;--err-br:#f7c1c1;
+  --pur-bg:#eeedfe;--pur-tx:#3c3489;--pur-br:#cecbf6;
+  --radius:8px;--radius-lg:12px;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1e1e1c;--bg2:#2a2a28;--bg3:#333331;
+  --txt:#f0f0ee;--txt2:#a0a09e;--txt3:#6b6b68;
+  --bdr:rgba(255,255,255,0.12);--bdr2:rgba(255,255,255,0.22);
+  --info-bg:#042c53;--info-tx:#85b7eb;--info-br:#185fa5;
+  --suc-bg:#173404;--suc-tx:#97c459;--suc-br:#3b6d11;
+  --warn-bg:#412402;--warn-tx:#ef9f27;--warn-br:#854f0b;
+  --err-bg:#501313;--err-tx:#f09595;--err-br:#a32d2d;
+  --pur-bg:#1e1a54;--pur-tx:#b0abf0;--pur-br:#534ab7;
+}}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Kaku Gothic ProN','Hiragino Sans',Meiryo,sans-serif;font-size:14px;color:var(--txt);background:var(--bg3);min-height:100vh}
+#wrap{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+.hdr{background:var(--bg);border-radius:var(--radius-lg);border:0.5px solid var(--bdr);padding:16px 20px;margin-bottom:14px;display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.hdr-logo{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#1a5fa5,#2e9e75);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;color:#fff}
+.hdr-info{flex:1;min-width:160px}
+.hdr-info h1{font-size:17px;font-weight:600;letter-spacing:-0.3px}
+.hdr-info p{font-size:12px;color:var(--txt2);margin-top:2px}
+.hdr-actions{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+button{padding:7px 14px;border:0.5px solid var(--bdr2);border-radius:var(--radius);background:var(--bg);color:var(--txt);font-family:inherit;font-size:13px;cursor:pointer;transition:background 0.12s,opacity 0.12s;white-space:nowrap}
+button:hover{background:var(--bg2)}
+button:active{opacity:0.75}
+button:disabled{opacity:0.4;cursor:not-allowed}
+.btn-imp{background:var(--info-bg);color:var(--info-tx);border-color:var(--info-br)}
+.btn-imp:hover{opacity:0.85;background:var(--info-bg)}
+.btn-exp{background:var(--suc-bg);color:var(--suc-tx);border-color:var(--suc-br)}
+.btn-exp:hover{opacity:0.85;background:var(--suc-bg)}
+.btn-sync{background:var(--pur-bg);color:var(--pur-tx);border-color:var(--pur-br)}
+.btn-sync:hover{opacity:0.85;background:var(--pur-bg)}
+.btn-danger{color:var(--err-tx);border-color:var(--err-br)}
+.btn-danger:hover{background:var(--err-bg)}
+.notif{display:none;padding:9px 14px;border-radius:var(--radius);font-size:13px;margin-bottom:12px;border:0.5px solid}
+.notif.info{background:var(--info-bg);color:var(--info-tx);border-color:var(--info-br)}
+.notif.success{background:var(--suc-bg);color:var(--suc-tx);border-color:var(--suc-br)}
+.notif.error{background:var(--err-bg);color:var(--err-tx);border-color:var(--err-br)}
+.notif.warning{background:var(--warn-bg);color:var(--warn-tx);border-color:var(--warn-br)}
+
+/* GitHub設定パネル */
+.gh-panel{background:var(--bg);border:0.5px solid var(--pur-br);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:14px}
+.gh-panel h2{font-size:14px;font-weight:600;color:var(--pur-tx);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.gh-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:600px){.gh-grid{grid-template-columns:1fr}}
+.gh-field{display:flex;flex-direction:column;gap:4px}
+.gh-field label{font-size:11px;font-weight:600;color:var(--txt2);letter-spacing:0.3px}
+.gh-field input{padding:7px 11px;border:0.5px solid var(--bdr2);border-radius:var(--radius);font-family:inherit;font-size:13px;background:var(--bg);color:var(--txt);outline:none}
+.gh-field input:focus{border-color:var(--pur-br);box-shadow:0 0 0 3px rgba(127,119,221,0.15)}
+.gh-field input[type=password]{letter-spacing:0.1em}
+.gh-actions{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+.gh-status{font-size:12px;padding:5px 10px;border-radius:var(--radius);border:0.5px solid}
+.gh-status.ok{background:var(--suc-bg);color:var(--suc-tx);border-color:var(--suc-br)}
+.gh-status.ng{background:var(--err-bg);color:var(--err-tx);border-color:var(--err-br)}
+.gh-status.checking{background:var(--warn-bg);color:var(--warn-tx);border-color:var(--warn-br)}
+.gh-hint{font-size:11px;color:var(--txt3);margin-top:8px;line-height:1.6}
+.gh-hint a{color:var(--info-tx)}
+.sync-bar{display:flex;gap:10px;align-items:center;background:var(--bg);border:0.5px solid var(--bdr);border-radius:var(--radius);padding:9px 14px;margin-bottom:12px;flex-wrap:wrap}
+.sync-info{flex:1;font-size:12px;color:var(--txt2)}
+.sync-info b{color:var(--txt);font-weight:500}
+
+.stats-bar{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;margin-bottom:12px;align-items:center;padding:10px 14px;background:var(--bg);border-radius:var(--radius);border:0.5px solid var(--bdr)}
+.stat{display:flex;align-items:center;gap:5px}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.card{background:var(--bg);border-radius:var(--radius-lg);border:0.5px solid var(--bdr);overflow:hidden;margin-bottom:14px}
+.nav{display:flex;border-bottom:0.5px solid var(--bdr)}
+.nb{background:none;border:none;border-bottom:2px solid transparent;padding:10px 20px;cursor:pointer;font-size:13px;color:var(--txt2);font-family:inherit;margin-bottom:-0.5px;transition:all 0.12s}
+.nb.act{color:var(--txt);font-weight:600;border-bottom-color:var(--txt)}
+.nb:hover:not(.act){color:var(--txt)}
+.panel{display:none;padding:16px}.panel.act{display:block}
+.toolbar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+input[type=text].srch{flex:1;min-width:160px;padding:7px 11px;border:0.5px solid var(--bdr2);border-radius:var(--radius);font-family:inherit;font-size:13px;background:var(--bg);color:var(--txt);outline:none}
+input[type=text].srch:focus{border-color:var(--info-br)}
+select.fsel{padding:7px 11px;border:0.5px solid var(--bdr2);border-radius:var(--radius);font-family:inherit;font-size:13px;background:var(--bg);color:var(--txt);cursor:pointer;outline:none}
+.twrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:700px}
+th{font-size:11px;font-weight:600;color:var(--txt2);padding:9px 11px;text-align:left;border-bottom:0.5px solid var(--bdr);background:var(--bg2);letter-spacing:0.3px;white-space:nowrap}
+td{font-size:13px;padding:8px 11px;border-bottom:0.5px solid var(--bdr);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg2)}
+select.bsel{padding:5px 7px;border:0.5px solid var(--bdr2);border-radius:6px;font-family:inherit;font-size:12px;background:var(--bg);color:var(--txt);cursor:pointer;max-width:92px;outline:none}
+input.sin{width:50px;padding:5px 7px;border:0.5px solid var(--bdr2);border-radius:6px;font-family:inherit;font-size:12px;text-align:center;background:var(--bg);color:var(--txt);outline:none}
+.chip{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;margin-bottom:4px}
+.muted{color:var(--txt2);font-size:11px}
+.empty-msg{text-align:center;padding:56px 20px;color:var(--txt2);font-size:13px;line-height:1.9}
+.bnav{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+.bntb{padding:7px 18px;border-radius:var(--radius);border:0.5px solid var(--bdr);font-family:inherit;font-size:13px;cursor:pointer}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-bottom:16px}
+.scard{border:0.5px solid var(--bdr);border-radius:var(--radius);padding:10px 12px;transition:transform 0.1s}
+.scard:hover{transform:translateY(-1px)}
+.scard.empty{background:var(--bg2);border-style:dashed}
+.snum{font-size:11px;font-weight:600;margin-bottom:3px}
+.sname{font-size:14px;font-weight:600}
+.sdet{font-size:11px;margin-top:4px;line-height:1.5}
+.ubox{padding:14px 16px;background:var(--bg2);border-radius:var(--radius);margin-top:10px}
+.ubox h3{font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:9px}
+.pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{padding:4px 11px;border:0.5px solid var(--bdr);border-radius:20px;font-size:12px;background:var(--bg);cursor:pointer;transition:background 0.1s}
+.pill:hover{background:var(--bg3)}
+.sgrid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.scard2{border:0.5px solid var(--bdr);border-radius:var(--radius-lg);overflow:hidden}
+.scard2-hdr{padding:13px 16px;font-weight:600;font-size:15px;display:flex;justify-content:space-between;align-items:center}
+.scard2-body{padding:12px 16px;background:var(--bg)}
+.srow{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:0.5px solid var(--bdr)}
+.srow:last-of-type{border-bottom:none}
+.bbar-bg{height:6px;background:var(--bg3);border-radius:3px;margin-top:10px;overflow:hidden}
+.bbar-fill{height:100%;border-radius:3px;transition:width 0.4s}
+.overview{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.ov-card{padding:10px 14px;background:var(--bg);border:0.5px solid var(--bdr);border-radius:var(--radius);flex:1;min-width:90px;text-align:center}
+.ov-num{font-size:22px;font-weight:600;line-height:1.2}
+.ov-label{font-size:11px;color:var(--txt2);margin-top:2px}
+.footer{text-align:center;font-size:11px;color:var(--txt3);margin-top:24px}
+.spinner{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:4px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ===== ドラッグ&ドロップ ===== */
+.scard{cursor:default;position:relative;transition:transform 0.1s,box-shadow 0.1s}
+.scard.occupied{cursor:grab}
+.scard.occupied:active{cursor:grabbing}
+.scard.drag-over{outline:2px dashed var(--info-br);background:var(--info-bg)!important;transform:scale(1.03)}
+.scard.dragging{opacity:0.35}
+.pill{cursor:grab;user-select:none}
+.pill.dragging{opacity:0.35}
+.ubox.drag-over{outline:2px dashed var(--bdr2);background:var(--bg3)!important}
+.del-btn{position:absolute;top:5px;right:6px;width:18px;height:18px;border-radius:50%;background:var(--err-bg);border:0.5px solid var(--err-br);color:var(--err-tx);font-size:11px;line-height:18px;text-align:center;cursor:pointer;opacity:0;transition:opacity 0.15s;padding:0;font-family:inherit;display:flex;align-items:center;justify-content:center}
+.scard.occupied:hover .del-btn{opacity:1}
+</style>
+</head>
+<body>
+<div id="wrap">
+
+  <!-- ヘッダー -->
+  <div class="hdr">
+    <div class="hdr-logo">🦑</div>
+    <div class="hdr-info">
+      <h1>IKA de Night｜船振り分け管理（共有版）</h1>
+      <p>第6回 2026年8月3日 ｜ GitHubでデータを共有します</p>
+    </div>
+    <div class="hdr-actions">
+      <input type="file" id="csvIn" accept=".csv" style="display:none">
+      <button class="btn-imp" onclick="document.getElementById('csvIn').click()">📂 CSV読み込み</button>
+      <button class="btn-exp" onclick="doExport()">💾 CSV書き出し</button>
+      <button class="btn-danger" id="clrBtn" onclick="doClear()">🗑 削除</button>
+    </div>
+  </div>
+
+  <!-- 同期バー（設定済み時のみ表示） -->
+  <div class="sync-bar" id="syncBar" style="display:none">
+    <div class="sync-info" id="syncInfo">未設定</div>
+    <button class="btn-sync" onclick="ghPull()" id="pullBtn">⬇ 最新を取得</button>
+    <button class="btn-sync" onclick="ghPush()" id="pushBtn">⬆ 保存・共有</button>
+  </div>
+
+  <div class="notif" id="notif"></div>
+  <div class="stats-bar" id="statsBar">CSVを読み込んでください</div>
+
+  <div class="card">
+    <div class="nav">
+      <button class="nb act" onclick="switchTab('list')">参加者一覧</button>
+      <button class="nb" onclick="switchTab('boat')">船別ビュー</button>
+      <button class="nb" onclick="switchTab('summary')">サマリー</button>
+    </div>
+    <div id="panel-list" class="panel act">
+      <div class="toolbar">
+        <input type="text" class="srch" id="srchIn" placeholder="名前・同船希望で検索..." oninput="renderList()">
+        <select class="fsel" id="bfil" onchange="renderList()">
+          <option value="">全員表示</option>
+          <option value="__none">未割当のみ</option>
+          <option value="春定丸">春定丸</option>
+          <option value="甚五郎丸">甚五郎丸</option>
+          <option value="日吉丸">日吉丸</option>
+          <option value="竹宝丸">竹宝丸</option>
+          <option value="高栄丸">高栄丸</option>
+        </select>
+      </div>
+      <div class="twrap">
+        <table>
+          <thead><tr>
+            <th>#</th><th>名前</th><th>付添者</th><th>同船希望</th><th>レンタル</th><th>Tシャツ</th><th>船番号</th><th>釣座</th>
+          </tr></thead>
+          <tbody id="listBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div id="panel-boat" class="panel">
+      <div class="bnav" id="boatNav"></div>
+      <div id="boatContent"></div>
+    </div>
+    <div id="panel-summary" class="panel">
+      <div id="summaryContent"></div>
+    </div>
+  </div>
+
+  <!-- フッター -->
+  <div class="footer">
+    IKA de Night 管理ツール ｜ 作成：中小企業診断士 三浦克彦
+    <span style="margin:0 6px">｜</span>
+    <a href="#" onclick="toggleGHPanel();return false;" style="color:var(--txt3);text-decoration:none;" id="ghConfigLink">⚙ GitHub連携設定</a>
+  </div>
+
+  <!-- GitHub設定パネル（フッター下・通常は非表示） -->
+  <div class="gh-panel" id="ghPanel" style="display:none;margin-top:14px">
+    <h2>⚙️ GitHub連携設定</h2>
+    <div class="gh-grid">
+      <div class="gh-field">
+        <label>リポジトリ（owner/repo）</label>
+        <input type="text" id="ghRepo" placeholder="例：kmiura0708-droid/ika-de-night" value="">
+      </div>
+      <div class="gh-field">
+        <label>保存ファイルパス</label>
+        <input type="text" id="ghPath" placeholder="例：data/assignments.json" value="data/assignments.json">
+      </div>
+      <div class="gh-field" style="grid-column:1/-1">
+        <label>Personal Access Token（このブラウザにのみ保存・GitHubには送信されません）</label>
+        <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+      </div>
+    </div>
+    <div class="gh-actions">
+      <button onclick="saveGHConfig()">設定を保存</button>
+      <button class="btn-sync" onclick="ghPull()">⬇ GitHubから読み込む</button>
+      <button class="btn-sync" onclick="ghPush()">⬆ GitHubへ保存する</button>
+      <button onclick="toggleGHPanel()" style="color:var(--txt2)">閉じる</button>
+      <span id="ghStatus" class="gh-status" style="display:none"></span>
+    </div>
+    <div class="gh-hint">
+      ⚠️ トークンはこのブラウザのlocalStorageにのみ保存され、GitHub以外には送信されません。<br>
+      トークンの作成：<a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a> → Generate new token (classic) → <b>repo</b>にチェック → Generate<br>
+      複数人で使う場合は、各自がトークンを発行して同じリポジトリ・パスを設定してください。
+    </div>
+  </div>
+</div>
+
+<script>
+const BOATS=['春定丸','甚五郎丸','日吉丸','竹宝丸','高栄丸'];
+const BC={
+  '春定丸':{bg:'#ddeefa',br:'#b5d4f4',tx:'#0c447c',dot:'#378add'},
+  '甚五郎丸':{bg:'#dff0d0',br:'#c0dd97',tx:'#27500a',dot:'#639922'},
+  '日吉丸':{bg:'#faeeda',br:'#fac775',tx:'#633806',dot:'#ef9f27'},
+  '竹宝丸':{bg:'#f9e8e2',br:'#f5c4b3',tx:'#712b13',dot:'#d85a30'},
+  '高栄丸':{bg:'#eeedfe',br:'#cecbf6',tx:'#3c3489',dot:'#7f77dd'},
+};
+const CAP=25, LSK='ikadenightv2', GHSK='ikaghconfig';
+let ps=[], asgn={}, curTab='list', curBoat='春定丸', clrN=0;
+let ghSHA=''; // GitHubファイルの現在のSHA（更新時に必要）
+let lastSyncTime='';
+
+// ============================
+// ローカルストレージ
+// ============================
+function localSave(){
+  try{localStorage.setItem(LSK,JSON.stringify({ps,asgn}))}catch{}
+}
+function localLoad(){
+  try{const s=localStorage.getItem(LSK);return s?JSON.parse(s):null}catch{return null}}
+
+// ============================
+// GitHub設定
+// ============================
+function saveGHConfig(){
+  const repo=document.getElementById('ghRepo').value.trim();
+  const path=document.getElementById('ghPath').value.trim();
+  const token=document.getElementById('ghToken').value.trim();
+  if(!repo||!path||!token){showN('リポジトリ・パス・トークンをすべて入力してください','error');return}
+  try{localStorage.setItem(GHSK,JSON.stringify({repo,path,token}))}catch{}
+  showN('GitHub設定を保存しました','success');
+  document.getElementById('ghPanel').style.display='none';
+  updateSyncBar();
+}
+function loadGHConfig(){
+  try{const s=localStorage.getItem(GHSK);return s?JSON.parse(s):null}catch{return null}}
+function updateSyncBar(){
+  const c=loadGHConfig();
+  const sb=document.getElementById('syncBar');
+  if(c&&c.repo&&c.token){
+    sb.style.display='flex';
+    document.getElementById('syncInfo').innerHTML=`<b>${c.repo}</b> / ${c.path} で共有中`;
+  }else{
+    sb.style.display='none';
+  }
+}
+function toggleGHPanel(){
+  const gp=document.getElementById('ghPanel');
+  const show=gp.style.display==='none';
+  if(show){
+    const c=loadGHConfig();
+    if(c){
+      document.getElementById('ghRepo').value=c.repo||'';
+      document.getElementById('ghPath').value=c.path||'data/assignments.json';
+      document.getElementById('ghToken').value=c.token||'';
+    }
+    gp.style.display='block';
+    gp.scrollIntoView({behavior:'smooth',block:'start'});
+  }else{
+    gp.style.display='none';
+  }
+}
+
+// ============================
+// GitHub API
+// ============================
+function setGHStatus(msg,type){
+  const el=document.getElementById('ghStatus');
+  el.style.display='inline-block';
+  el.className='gh-status '+type;
+  el.innerHTML=type==='checking'?`<span class="spinner"></span>${msg}`:msg;
+}
+function setBtnsDisabled(v){
+  ['pullBtn','pushBtn'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=v});
+}
+
+async function ghPull(){
+  const c=loadGHConfig();
+  if(!c){showN('GitHub設定を先に保存してください','error');return}
+  setGHStatus('取得中...','checking');
+  setBtnsDisabled(true);
+  try{
+    const res=await fetch(`https://api.github.com/repos/${c.repo}/contents/${c.path}`,{
+      headers:{Authorization:`token ${c.token}`,Accept:'application/vnd.github.v3+json'}
+    });
+    if(res.status===404){
+      setGHStatus('データなし（まだ保存されていません）','ng');
+      showN('GitHubにデータがありません。CSV読み込み後に「GitHubへ保存」してください','warning');
+      setBtnsDisabled(false);return;
+    }
+    if(!res.ok){const e=await res.json();throw new Error(e.message||res.status)}
+    const json=await res.json();
+    ghSHA=json.sha;
+    const data=JSON.parse(decodeURIComponent(escape(atob(json.content.replace(/\n/g,'')))));
+    ps=data.ps||[];asgn=data.asgn||{};
+    localSave();
+    const ts=data.savedAt?new Date(data.savedAt).toLocaleString('ja-JP'):'不明';
+    lastSyncTime=new Date().toLocaleString('ja-JP');
+    setGHStatus('✅ 取得完了','ok');
+    document.getElementById('syncInfo').innerHTML=`<b>${c.repo}</b> / ${c.path} ｜ 最終同期：${lastSyncTime} ｜ 保存日時：${ts}`;
+    render();
+    showN(`GitHubからデータを取得しました（${ps.length}名）`,'success');
+  }catch(e){
+    setGHStatus('エラー：'+e.message,'ng');
+    showN('取得失敗：'+e.message,'error');
+  }finally{setBtnsDisabled(false)}
+}
+
+async function ghPush(){
+  const c=loadGHConfig();
+  if(!c){showN('GitHub設定を先に保存してください','error');return}
+  if(!ps.length){showN('保存するデータがありません','error');return}
+  setGHStatus('保存中...','checking');
+  setBtnsDisabled(true);
+  try{
+    // SHAが未取得の場合は先にGETして確認
+    if(!ghSHA){
+      const chk=await fetch(`https://api.github.com/repos/${c.repo}/contents/${c.path}`,{
+        headers:{Authorization:`token ${c.token}`,Accept:'application/vnd.github.v3+json'}
+      });
+      if(chk.ok){const j=await chk.json();ghSHA=j.sha}
+    }
+    const payload={ps,asgn,savedAt:new Date().toISOString(),savedBy:'IKAdeNight管理ツール'};
+    const body={
+      message:`IKA de Night 割当更新 ${new Date().toLocaleString('ja-JP')}`,
+      content:btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2)))),
+      ...(ghSHA?{sha:ghSHA}:{})
+    };
+    const res=await fetch(`https://api.github.com/repos/${c.repo}/contents/${c.path}`,{
+      method:'PUT',
+      headers:{Authorization:`token ${c.token}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+    if(!res.ok){const e=await res.json();throw new Error(e.message||res.status)}
+    const j=await res.json();
+    ghSHA=j.content.sha;
+    lastSyncTime=new Date().toLocaleString('ja-JP');
+    setGHStatus('✅ 保存完了','ok');
+    const ci=document.getElementById('syncInfo');
+    ci.innerHTML=`<b>${c.repo}</b> / ${c.path} ｜ 最終同期：${lastSyncTime}`;
+    showN('GitHubへ保存・共有しました','success');
+  }catch(e){
+    setGHStatus('エラー：'+e.message,'ng');
+    showN('保存失敗：'+e.message,'error');
+  }finally{setBtnsDisabled(false)}
+}
+
+// ============================
+// CSV処理
+// ============================
+function csvParse(text){
+  if(text.charCodeAt(0)===0xFEFF)text=text.slice(1);
+  const rows=[];let row=[],f='',q=false;
+  for(let i=0;i<text.length;i++){const c=text[i];
+    if(q){if(c==='"'){if(text[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
+    else{if(c==='"')q=true;else if(c===','){row.push(f);f=''}else if(c==='\n'){row.push(f);if(row.some(x=>x.trim()))rows.push(row);row=[];f=''}else if(c!=='\r')f+=c}
+  }
+  if(f||row.length>1){row.push(f);rows.push(row)}
+  return rows;
+}
+function gf(hs,r,k){const i=hs.findIndex(h=>h.trim()===k.trim());return i>=0?(r[i]||'').trim():''}
+function mapP(hs,r){
+  const nm=gf(hs,r,'お名前'),ts=gf(hs,r,'タイムスタンプ');
+  return{id:ts||nm,name:nm,phone:gf(hs,r,'電話番号'),
+    compType:gf(hs,r,'付添（つきそい）（釣りをしない方）の有無'),
+    compCnt:gf(hs,r,'付添（つきそい）人数'),
+    compName:gf(hs,r,'付添（つきそい）者名'),
+    rental:gf(hs,r,'レンタルタックルの有無（1セット＋2,000円）'),
+    pref:gf(hs,r,'同船希望者名'),
+    tshirt:gf(hs,r,'オリジナルTシャツ購入'),
+    tsize:gf(hs,r,'サイズを選択してください'),
+    notes:gf(hs,r,'ご質問・ご要望・その他（自由記述）')};
+}
+async function importCSV(file){
+  const text=await file.text();
+  const rows=csvParse(text);
+  if(rows.length<2){showN('CSVの形式が正しくありません','error');return}
+  const hs=rows[0];
+  const nps=rows.slice(1).map(r=>mapP(hs,r)).filter(p=>p.name);
+  const ex=new Map(ps.map(p=>[p.id,p]));
+  let added=0,updated=0;
+  nps.forEach(p=>{if(!ex.has(p.id)){ps.push(p);added++}else{Object.assign(ex.get(p.id),p);updated++}});
+  localSave();render();
+  showN(`読み込み完了：${nps.length}件（新規 ${added}件・更新 ${updated}件）—「GitHubへ保存」で共有できます`,'success');
+}
+
+// ============================
+// データ操作
+// ============================
+function ga(id){return asgn[id]||{boat:'',seat:''}}
+function setBoat(id,b){if(!asgn[id])asgn[id]={};asgn[id].boat=b;localSave();renderStats();renderList();if(curTab==='boat')renderBoat();if(curTab==='summary')renderSummary()}
+function setSeat(id,s){if(!asgn[id])asgn[id]={};asgn[id].seat=s;localSave();if(curTab==='boat')renderBoat()}
+
+// ============================
+// タブ
+// ============================
+function switchTab(t){
+  curTab=t;
+  document.querySelectorAll('.nb').forEach((b,i)=>b.classList.toggle('act',['list','boat','summary'][i]===t));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('act'));
+  document.getElementById('panel-'+t).classList.add('act');
+  if(t==='boat')renderBoat();if(t==='summary')renderSummary();
+}
+
+// ============================
+// レンダリング
+// ============================
+function renderStats(){
+  const tot=ps.length;
+  if(!tot){document.getElementById('statsBar').textContent='CSVを読み込んでください';return}
+  const asgnd=ps.filter(p=>ga(p.id).boat).length;
+  const bc={};BOATS.forEach(b=>bc[b]=0);
+  ps.forEach(p=>{const b=ga(p.id).boat;if(b)bc[b]++});
+  let h=`<span class="stat">👥 <b>${tot}</b>名</span><span class="stat" style="color:var(--suc-tx)">✅ 割当済 <b>${asgnd}</b>名</span><span class="stat" style="color:var(--warn-tx)">⏳ 未割当 <b>${tot-asgnd}</b>名</span>`;
+  BOATS.forEach(b=>{if(bc[b]>0)h+=`<span class="stat"><span class="dot" style="background:${BC[b].dot}"></span>${b}：<b>${bc[b]}</b>名</span>`});
+  document.getElementById('statsBar').innerHTML=h;
+}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+function renderList(){
+  const q=(document.getElementById('srchIn')?.value||'').toLowerCase();
+  const bf=document.getElementById('bfil')?.value||'';
+  let fl=ps.filter(p=>{
+    if(q&&!p.name.toLowerCase().includes(q)&&!(p.pref||'').toLowerCase().includes(q))return false;
+    const b=ga(p.id).boat;
+    if(bf==='__none'&&b)return false;
+    if(bf&&bf!=='__none'&&b!==bf)return false;
+    return true;
+  });
+  if(!fl.length){
+    document.getElementById('listBody').innerHTML=`<tr><td colspan="8" class="empty-msg">${ps.length===0?'「📂 CSV読み込み」からGoogleフォームのCSVを選択するか、<br>「⬇ 最新を取得」でGitHubからデータを読み込んでください':'該当する参加者がいません'}</td></tr>`;
+    return;
+  }
+  document.getElementById('listBody').innerHTML=fl.map(p=>{
+    const a=ga(p.id),idx=ps.indexOf(p)+1;
+    const cs=a.boat?`background:${BC[a.boat].bg};color:${BC[a.boat].tx};border:0.5px solid ${BC[a.boat].br}`:'background:var(--bg2);color:var(--txt2)';
+    const bopts=BOATS.map(b=>`<option value="${b}"${a.boat===b?' selected':''}>${b}</option>`).join('');
+    const hc=p.compType&&p.compType!=='本人のみ';
+    const ren=p.rental&&!p.rental.includes('無し')?`<span style="color:var(--info-tx);font-size:11px;font-weight:600">あり</span>`:'<span class="muted">-</span>';
+    const ts=p.tshirt&&!p.tshirt.includes('しない')?`<span style="font-size:11px;font-weight:600">${esc(p.tsize)||'購入'}</span>`:'<span class="muted">-</span>';
+    const id2=esc(p.id).replace(/'/g,"\\'");
+    return`<tr>
+      <td class="muted">${idx}</td>
+      <td><div style="font-weight:600">${esc(p.name)}</div>${p.notes?`<div class="muted" style="margin-top:2px">${esc(p.notes.slice(0,24))}${p.notes.length>24?'…':''}</div>`:''}</td>
+      <td>${hc?`<span style="font-size:12px">${esc(p.compName||p.compCnt||'付添あり')}</span>`:'<span class="muted">-</span>'}</td>
+      <td><span style="font-size:12px;color:var(--txt2)">${p.pref?esc(p.pref.slice(0,20))+(p.pref.length>20?'…':''):'-'}</span></td>
+      <td>${ren}</td><td>${ts}</td>
+      <td><div style="display:flex;flex-direction:column;gap:5px">
+        <span class="chip" style="${cs}">${a.boat||'未割当'}</span>
+        <select class="bsel" onchange="setBoat('${id2}',this.value)"><option value="">-- 未割当 --</option>${bopts}</select>
+      </div></td>
+      <td><input class="sin" type="number" min="1" max="25" value="${a.seat||''}" placeholder="-" onchange="setSeat('${id2}',this.value)"></td>
+    </tr>`;
+  }).join('');
+}
+
+// ===== 入力方式の検出 =====
+const isTouch = () => ('ontouchstart' in window || navigator.maxTouchPoints > 0);
+
+// ===== ドラッグ&ドロップ／タップ選択 共通状態 =====
+let dragId=null, dragFrom=null;
+let selectedId=null; // タッチ用：現在選択中のID
+
+function renderBoat(){
+  document.getElementById('boatNav').innerHTML=BOATS.map(b=>{
+    const cnt=ps.filter(p=>ga(p.id).boat===b).length,c=BC[b],act=b===curBoat;
+    const st=act?`background:${c.bg};color:${c.tx};border-color:${c.br};font-weight:600`:'';
+    return`<button class="bntb" style="${st}" onclick="curBoat='${b}';selectedId=null;renderBoat()">${b} <span style="font-size:11px;opacity:0.7">${cnt}名</span></button>`;
+  }).join('');
+
+  const bp=ps.filter(p=>ga(p.id).boat===curBoat);
+  const sm={};bp.forEach(p=>{const s=parseInt(ga(p.id).seat);if(s>0)sm[s]=p});
+  const c=BC[curBoat];
+  let sg='';
+
+  for(let s=1;s<=CAP;s++){
+    const p=sm[s];
+    const isSel = p && p.id===selectedId;
+    if(p){
+      const hc=p.compType&&p.compType!=='本人のみ';
+      const det=[hc?'付添：'+(p.compName||p.compCnt):'',p.pref?'希望：'+p.pref.slice(0,16)+(p.pref.length>16?'…':''):''].filter(Boolean).join(' / ');
+      const pid=p.id.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+      const selRing = isSel ? `box-shadow:0 0 0 3px ${c.dot};` : '';
+      sg+=`<div class="scard occupied" data-seat="${s}" draggable="true"
+        ondragstart="onCardDragStart(event,${s},'${pid}')"
+        ondragend="onDragEnd(event)"
+        ondragover="onSeatDragOver(event)"
+        ondragleave="onDragLeave(event)"
+        ondrop="onSeatDrop(event,${s})"
+        onclick="onSeatClick(event,${s},'${pid}')"
+        style="background:${c.bg};border-color:${c.br};${selRing}cursor:pointer">
+        <button class="del-btn" onclick="event.stopPropagation();unassign('${pid}')" title="割当を解除">✕</button>
+        <div class="snum" style="color:${c.tx}">釣座 ${s}</div>
+        <div class="sname" style="color:${c.tx}">${esc(p.name)}</div>
+        ${det?`<div class="sdet" style="color:${c.tx};opacity:0.8">${esc(det)}</div>`:''}
+      </div>`;
+    }else{
+      // 選択中の人がいる場合、空席を強調
+      const hi = selectedId ? `border:2px dashed ${c.dot};` : '';
+      sg+=`<div class="scard empty" data-seat="${s}"
+        ondragover="onSeatDragOver(event)"
+        ondragleave="onDragLeave(event)"
+        ondrop="onSeatDrop(event,${s})"
+        onclick="onEmptySeatClick(event,${s})"
+        style="${hi}cursor:${selectedId?'pointer':'default'}">
+        <div class="snum muted">釣座 ${s}</div>
+        <div style="font-size:12px;color:var(--txt3)">${selectedId?'ここへ移動':'空席'}</div>
+      </div>`;
+    }
+  }
+
+  const unassigned=ps.filter(p=>!ga(p.id).boat);
+  let touchHint = isTouch()
+    ? '<div style="font-size:11px;color:var(--txt2);margin-bottom:8px">名前をタップして選択 → 釣座をタップして配置</div>'
+    : '';
+  let ubox;
+  if(!unassigned.length){
+    ubox='<div class="ubox" style="text-align:center;color:var(--suc-tx)">全員割当済 ✅</div>';
+  }else{
+    const pills=unassigned.map(p=>{
+      const pid=p.id.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+      const isSel = p.id===selectedId;
+      const selSt = isSel
+        ? `background:${BC[curBoat].bg};border:2px solid ${BC[curBoat].dot};color:${BC[curBoat].tx};font-weight:600;`
+        : '';
+      return`<span class="pill" draggable="true"
+        style="${selSt}"
+        ondragstart="onPillDragStart(event,'${pid}')"
+        ondragend="onDragEnd(event)"
+        onclick="onPillClick(event,'${pid}')">${esc(p.name)}${isSel?' ✓':''}</span>`;
+    }).join('');
+    ubox=`<div class="ubox" id="ubox"
+      ondragover="onUboxDragOver(event)"
+      ondragleave="onDragLeave(event)"
+      ondrop="onUboxDrop(event)"
+      onclick="onUboxClick(event)">
+      ${touchHint}
+      <h3>未割当（${unassigned.length}名）<span style="font-weight:400;font-size:11px"> — ドラッグ or タップで割当 ／ ✕ で解除</span></h3>
+      <div class="pills">${pills}</div>
+    </div>`;
+  }
+
+  document.getElementById('boatContent').innerHTML=
+    `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <span class="muted">${curBoat} — <b style="color:var(--txt)">${bp.length}</b>名 / 定員目安 ${CAP}名</span>
+      <button onclick="selectedId=null;renderBoat()" style="font-size:11px;padding:4px 10px;color:var(--txt2)">⟳ 更新</button>
+    </div>`+
+    `<div class="sgrid">${sg}</div>${ubox}`;
+}
+
+// ===== タッチ用クリックハンドラ =====
+function onPillClick(e,pid){
+  e.stopPropagation();
+  selectedId = (selectedId===pid) ? null : pid;
+  renderBoat();
+}
+function onSeatClick(e,seat,pid){
+  e.stopPropagation();
+  if(!selectedId){
+    // 誰も選択していない → この人を選択
+    selectedId = pid;
+    renderBoat();
+    return;
+  }
+  if(selectedId===pid){
+    // 同じ人をタップ → 選択解除
+    selectedId=null;
+    renderBoat();
+    return;
+  }
+  // 別の人が選択中 → 入れ替え
+  const bp=ps.filter(p=>ga(p.id).boat===curBoat);
+  const sm={};bp.forEach(p=>{const s=parseInt(ga(p.id).seat);if(s>0)sm[s]=p});
+  const selPerson = ps.find(p=>p.id===selectedId);
+  const selA = ga(selectedId);
+  if(selPerson){
+    // 選択中の人の元の座席に今の人を移す
+    if(!asgn[pid])asgn[pid]={};
+    if(selA.boat){
+      asgn[pid].boat=selA.boat;
+      asgn[pid].seat=selA.seat;
+    }else{
+      asgn[pid]={boat:'',seat:''};
+    }
+    if(!asgn[selectedId])asgn[selectedId]={};
+    asgn[selectedId].boat=curBoat;
+    asgn[selectedId].seat=String(seat);
+  }
+  selectedId=null;
+  localSave();renderStats();renderList();renderBoat();
+}
+function onEmptySeatClick(e,seat){
+  e.stopPropagation();
+  if(!selectedId)return;
+  if(!asgn[selectedId])asgn[selectedId]={};
+  asgn[selectedId].boat=curBoat;
+  asgn[selectedId].seat=String(seat);
+  selectedId=null;
+  localSave();renderStats();renderList();renderBoat();
+}
+function onUboxClick(e){
+  // 未割当エリアをタップ → 選択中の割当済み人を解除
+  if(!selectedId)return;
+  const a=ga(selectedId);
+  if(!a.boat)return; // すでに未割当
+  asgn[selectedId]={boat:'',seat:''};
+  selectedId=null;
+  localSave();renderStats();renderList();renderBoat();
+  showN('割当を解除しました','info');
+}
+
+// ===== D&D ハンドラ =====
+function onPillDragStart(e,pid){
+  dragId=pid;dragFrom={type:'unassigned'};
+  e.currentTarget.classList.add('dragging');
+  e.dataTransfer.effectAllowed='move';
+}
+function onCardDragStart(e,seat,pid){
+  dragId=pid;dragFrom={type:'seat',boat:curBoat,seat};
+  e.currentTarget.classList.add('dragging');
+  e.dataTransfer.effectAllowed='move';
+}
+function onDragEnd(e){
+  e.currentTarget.classList.remove('dragging');
+  document.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));
+  setTimeout(()=>{ if(curTab==='boat') renderBoat(); },100);
+}
+function onSeatDragOver(e){
+  e.preventDefault();e.dataTransfer.dropEffect='move';
+  e.currentTarget.classList.add('drag-over');
+}
+function onDragLeave(e){e.currentTarget.classList.remove('drag-over')}
+function onUboxDragOver(e){
+  if(dragFrom&&dragFrom.type==='seat'){e.preventDefault();e.currentTarget.classList.add('drag-over')}
+}
+function onSeatDrop(e,targetSeat){
+  e.preventDefault();e.currentTarget.classList.remove('drag-over');
+  if(!dragId)return;
+  const bp=ps.filter(p=>ga(p.id).boat===curBoat);
+  const sm={};bp.forEach(p=>{const s=parseInt(ga(p.id).seat);if(s>0)sm[s]=p});
+  const existing=sm[targetSeat];
+  if(existing&&existing.id!==dragId){
+    if(dragFrom&&dragFrom.type==='seat'){
+      if(!asgn[existing.id])asgn[existing.id]={};
+      asgn[existing.id].boat=curBoat;
+      asgn[existing.id].seat=String(dragFrom.seat);
+    }else{
+      asgn[existing.id]={boat:'',seat:''};
+    }
+  }
+  if(!asgn[dragId])asgn[dragId]={};
+  asgn[dragId].boat=curBoat;
+  asgn[dragId].seat=String(targetSeat);
+  dragId=null;dragFrom=null;
+  localSave();
+  setTimeout(()=>{renderStats();renderList();renderBoat();},50);
+}
+function onUboxDrop(e){
+  e.preventDefault();e.currentTarget.classList.remove('drag-over');
+  if(!dragId||!dragFrom||dragFrom.type!=='seat')return;
+  asgn[dragId]={boat:'',seat:''};
+  dragId=null;dragFrom=null;
+  localSave();
+  setTimeout(()=>{renderStats();renderList();renderBoat();showN('割当を解除しました','info');},50);
+}
+function unassign(id){
+  if(!asgn[id])return;
+  asgn[id]={boat:'',seat:''};
+  selectedId=null;
+  localSave();renderStats();renderList();renderBoat();
+  showN((ps.find(p=>p.id===id)||{name:'?'}).name+' の割当を解除しました','info');
+}
+
+function renderSummary(){
+  const bc={},bs={};BOATS.forEach(b=>{bc[b]=0;bs[b]=[]});
+  ps.forEach(p=>{const a=ga(p.id);if(a.boat){bc[a.boat]++;if(a.seat)bs[a.boat].push(+a.seat)}});
+  const tot=ps.length,asgnd=ps.filter(p=>ga(p.id).boat).length;
+  const ren=ps.filter(p=>p.rental&&!p.rental.includes('無し')).length;
+  const ts=ps.filter(p=>p.tshirt&&!p.tshirt.includes('しない')).length;
+  const comp=ps.filter(p=>p.compType&&p.compType!=='本人のみ').length;
+  document.getElementById('summaryContent').innerHTML=`
+    <div class="overview">
+      <div class="ov-card"><div class="ov-num">${tot}</div><div class="ov-label">参加者合計</div></div>
+      <div class="ov-card"><div class="ov-num" style="color:var(--suc-tx)">${asgnd}</div><div class="ov-label">割当済</div></div>
+      <div class="ov-card"><div class="ov-num" style="color:var(--warn-tx)">${tot-asgnd}</div><div class="ov-label">未割当</div></div>
+      <div class="ov-card"><div class="ov-num">${comp}</div><div class="ov-label">付添あり</div></div>
+      <div class="ov-card"><div class="ov-num">${ren}</div><div class="ov-label">レンタル</div></div>
+      <div class="ov-card"><div class="ov-num">${ts}</div><div class="ov-label">Tシャツ</div></div>
+    </div>
+    <div class="sgrid2">${BOATS.map(b=>{
+      const c=BC[b],cnt=bc[b],pct=Math.round(cnt/CAP*100),rem=Math.max(0,CAP-cnt);
+      const seats=bs[b].sort((a,z)=>a-z);
+      return`<div class="scard2">
+        <div class="scard2-hdr" style="background:${c.bg};color:${c.tx}">${b}<span style="font-size:13px;font-weight:400;opacity:0.8">${cnt}/${CAP}名</span></div>
+        <div class="scard2-body">
+          <div class="srow"><span style="color:var(--txt2)">割当済</span><span style="font-weight:600">${cnt}名</span></div>
+          <div class="srow"><span style="color:var(--txt2)">残席（目安）</span><span style="font-weight:600;${rem<=3?'color:var(--err-tx)':''}">${rem}席</span></div>
+          <div class="srow"><span style="color:var(--txt2)">割当釣座</span><span style="font-size:11px;color:var(--txt2)">${seats.length?seats.slice(0,10).join(', ')+(seats.length>10?'…':''):'-'}</span></div>
+          <div class="bbar-bg"><div class="bbar-fill" style="width:${Math.min(100,pct)}%;background:${c.dot}"></div></div>
+          <div style="font-size:11px;color:var(--txt2);margin-top:5px">${pct}% 使用中</div>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
+}
+
+function render(){renderStats();renderList();if(curTab==='boat')renderBoat();if(curTab==='summary')renderSummary()}
+
+function showN(msg,type='info'){
+  const el=document.getElementById('notif');
+  el.textContent=msg;el.className='notif '+type;el.style.display='block';
+  clearTimeout(el._t);el._t=setTimeout(()=>el.style.display='none',4500);
+}
+
+function doExport(){
+  if(!ps.length){showN('データがありません','error');return}
+  const rows=[['名前','電話番号','船番号','釣座番号','付添者名','同船希望','レンタル','Tシャツ・サイズ','備考']];
+  ps.forEach(p=>{const a=ga(p.id);rows.push([p.name,p.phone,a.boat||'',a.seat||'',p.compName,p.pref,p.rental,(p.tshirt||'')+(p.tsize?' '+p.tsize:''),p.notes])});
+  const csv=rows.map(r=>r.map(v=>`"${(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  const d=new Date();
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent('\uFEFF'+csv);
+  a.download=`IKAdeNight_第6回_${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.csv`;
+  a.click();showN('CSVを書き出しました','success');
+}
+
+function doClear(){
+  if(clrN===0){
+    clrN=1;
+    document.getElementById('clrBtn').textContent='⚠ もう一度押すと削除';
+    document.getElementById('clrBtn').style.background='var(--err-bg)';
+    setTimeout(()=>{clrN=0;document.getElementById('clrBtn').textContent='🗑 削除';document.getElementById('clrBtn').style.background=''},4000);
+    return;
+  }
+  clrN=0;ps=[];asgn={};ghSHA='';
+  try{localStorage.removeItem(LSK)}catch{}
+  document.getElementById('clrBtn').textContent='🗑 削除';
+  document.getElementById('clrBtn').style.background='';
+  render();showN('ローカルデータを削除しました（GitHubのデータは残っています）','info');
+}
+
+document.getElementById('csvIn').addEventListener('change',e=>{if(e.target.files[0])importCSV(e.target.files[0]);e.target.value=''});
+
+// 初期化
+(function init(){
+  const c=loadGHConfig();
+  if(c){
+    document.getElementById('ghRepo').value=c.repo||'';
+    document.getElementById('ghPath').value=c.path||'data/assignments.json';
+    updateSyncBar();
+  }else{
+    // 未設定の場合はページ下部の設定パネルを自動展開
+    document.getElementById('ghPanel').style.display='block';
+  }
+  const state=localLoad();
+  if(state){ps=state.ps||[];asgn=state.asgn||{};render()}
+  else{document.getElementById('listBody').innerHTML=`<tr><td colspan="8" class="empty-msg">GitHub設定後に「⬇ 最新を取得」、または<br>「📂 CSV読み込み」でデータを読み込んでください</td></tr>`}
+})();
+</script>
+</body>
+</html>
