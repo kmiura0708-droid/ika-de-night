@@ -193,7 +193,7 @@ input.sin{width:50px;padding:5px 7px;border:0.5px solid var(--bdr2);border-radiu
       <div class="twrap">
         <table>
           <thead><tr>
-            <th>#</th><th>名前</th><th>付添者</th><th>同船希望</th><th>レンタル</th><th>Tシャツ</th><th>船番号</th><th>釣座</th>
+            <th>#</th><th>名前</th><th>付添者</th><th>同船希望</th><th>レンタル</th><th>Tシャツ</th><th>船番号 <span style="font-weight:400;font-size:10px;opacity:0.6">（船別ビューで編集）</span></th><th>釣座</th>
           </tr></thead>
           <tbody id="listBody"></tbody>
         </table>
@@ -519,22 +519,17 @@ function renderList(){
   document.getElementById('listBody').innerHTML=fl.map(p=>{
     const a=ga(p.id),idx=ps.indexOf(p)+1;
     const cs=a.boat?`background:${BC[a.boat].bg};color:${BC[a.boat].tx};border:0.5px solid ${BC[a.boat].br}`:'background:var(--bg2);color:var(--txt2)';
-    const bopts=BOATS.map(b=>`<option value="${b}"${a.boat===b?' selected':''}>${b}</option>`).join('');
     const hc=p.compType&&p.compType!=='本人のみ';
     const ren=p.rental&&!p.rental.includes('無し')?`<span style="color:var(--info-tx);font-size:11px;font-weight:600">あり</span>`:'<span class="muted">-</span>';
     const ts=p.tshirt&&!p.tshirt.includes('しない')?`<span style="font-size:11px;font-weight:600">${esc(p.tsize)||'購入'}</span>`:'<span class="muted">-</span>';
-    const id2=esc(p.id).replace(/'/g,"\\'");
     return`<tr>
       <td class="muted">${idx}</td>
-      <td><div style="font-weight:600">${esc(p.name)}${p.type==='companion'?'<span style="font-size:10px;padding:1px 5px;border-radius:10px;background:var(--warn-bg);color:var(--warn-tx);margin-left:5px;vertical-align:middle">付添</span>':''}</div>${p.type==='companion'?`<div class="muted" style="margin-top:2px">→ ${esc(p.parentName||'')}の付添</div>`:(p.notes?`<div class="muted" style="margin-top:2px">${esc(p.notes.slice(0,24))}${p.notes.length>24?'…':''}</div>`:'')}</td>
+      <td><div style="font-weight:600">${esc(p.name)}</div>${p.notes?`<div class="muted" style="margin-top:2px">${esc(p.notes.slice(0,24))}${p.notes.length>24?'…':''}</div>`:''}</td>
       <td>${hc?`<span style="font-size:12px">${esc(p.compName||p.compCnt||'付添あり')}</span>`:'<span class="muted">-</span>'}</td>
       <td><span style="font-size:12px;color:var(--txt2)">${p.pref?esc(p.pref.slice(0,20))+(p.pref.length>20?'…':''):'-'}</span></td>
       <td>${ren}</td><td>${ts}</td>
-      <td><div style="display:flex;flex-direction:column;gap:5px">
-        <span class="chip" style="${cs}">${a.boat||'未割当'}</span>
-        <select class="bsel" onchange="setBoat('${id2}',this.value)"><option value="">-- 未割当 --</option>${bopts}</select>
-      </div></td>
-      <td><input class="sin" type="number" min="1" max="30" value="${a.seat||''}" placeholder="-" onchange="setSeat('${id2}',this.value)"></td>
+      <td><span class="chip" style="${cs}">${a.boat||'未割当'}</span></td>
+      <td style="text-align:center;color:var(--txt2);font-size:13px">${a.seat||'-'}</td>
     </tr>`;
   }).join('');
 }
