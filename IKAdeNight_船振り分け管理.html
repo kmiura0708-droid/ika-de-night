@@ -264,7 +264,7 @@ const BOAT_CFG={
   '高栄丸':  {seats:12, compSeats:2},
 };
 const LSK='ikadenightv2', GHSK='ikaghconfig';
-let ps=[], asgn={}, curTab='list', curBoat='春定丸', clrN=0;
+let ps=[], asgn={}, compAsgn={}, curTab='list', curBoat='春定丸', clrN=0;
 let ghSHA=''; // GitHubファイルの現在のSHA（更新時に必要）
 let lastSyncTime='';
 
@@ -272,10 +272,10 @@ let lastSyncTime='';
 // ローカルストレージ
 // ============================
 function localSave(){
-  try{localStorage.setItem(LSK,JSON.stringify({ps,asgn}))}catch{}
+  try{localStorage.setItem(LSK,JSON.stringify({ps,asgn,compAsgn}))}catch{}
 }
 function localLoad(){
-  try{const s=localStorage.getItem(LSK);return s?JSON.parse(s):null}catch{return null}}
+  try{const s=localStorage.getItem(LSK);if(!s)return null;const d=JSON.parse(s);if(d.compAsgn)compAsgn=d.compAsgn;return d;}catch{return null}}
 
 // ============================
 // GitHub設定
@@ -350,7 +350,7 @@ async function ghPull(){
     const json=await res.json();
     ghSHA=json.sha;
     const data=JSON.parse(decodeURIComponent(escape(atob(json.content.replace(/\n/g,'')))));
-    ps=data.ps||[];asgn=data.asgn||{};
+    ps=data.ps||[];asgn=data.asgn||{};compAsgn=data.compAsgn||{};
     localSave();
     const ts=data.savedAt?new Date(data.savedAt).toLocaleString('ja-JP'):'不明';
     lastSyncTime=new Date().toLocaleString('ja-JP');
@@ -378,7 +378,7 @@ async function ghPush(){
       });
       if(chk.ok){const j=await chk.json();ghSHA=j.sha}
     }
-    const payload={ps,asgn,savedAt:new Date().toISOString(),savedBy:'IKAdeNight管理ツール'};
+    const payload={ps,asgn,compAsgn,savedAt:new Date().toISOString(),savedBy:'IKAdeNight管理ツール'};
     const body={
       message:`IKA de Night 割当更新 ${new Date().toLocaleString('ja-JP')}`,
       content:btoa(unescape(encodeURIComponent(JSON.stringify(payload,null,2)))),
@@ -434,7 +434,7 @@ function parseCompanions(mainPerson){
   const n=mainPerson.compName||'';
   if(!n||n==='nan')return[];
   // 区切り: 読点・カンマ・全角スペース / ただし「池田 真人、池田 歩叶」の半角スペースはファーストネームの区切り
-  const parts=n.split(/[\u3001,\uff0c\n]+/).map(s=>s.trim()).filter(s=>s&&s!=='nan');
+  const parts=n.split(/[\u3001,\uff0c\u3000\n]+/).map(s=>s.trim()).filter(s=>s&&s!=='nan');
   return parts.map((name,i)=>({
     id: mainPerson.id+'_comp_'+i,
     name: name,
@@ -452,28 +452,16 @@ async function importCSV(file){
   const hs=rows[0];
   const mainPs=rows.slice(1).map(r=>mapP(hs,r)).filter(p=>p.name);
   // 付添者を展開
-  const allNew=[];
-  mainPs.forEach(p=>{
-    allNew.push(p);
-    parseCompanions(p).forEach(cp=>allNew.push(cp));
-  });
   const ex=new Map(ps.map(p=>[p.id,p]));
   let added=0,updated=0;
-  allNew.forEach(p=>{
+  mainPs.forEach(p=>{
     if(!ex.has(p.id)){ps.push(p);added++}
-    else{
-      // 付添者は親の情報が変わった可能性があるので再生成
-      if(p.type==='companion'){Object.assign(ex.get(p.id),p);}
-      else{Object.assign(ex.get(p.id),p);}
-      updated++;
-    }
+    else{Object.assign(ex.get(p.id),p);updated++;}
   });
-  // 孤立した付添者を削除（親が消えた場合）
-  const mainIds=new Set(mainPs.map(p=>p.id));
-  ps=ps.filter(p=>p.type!=='companion'||mainIds.has(p.parentId));
+  // 不要になった付添者（以前のバージョンで追加されたもの）を削除
+  ps=ps.filter(p=>p.type!=='companion');
   localSave();render();
-  const compCount=allNew.filter(p=>p.type==='companion').length;
-  showN(`読み込み完了：${mainPs.length}名（付添${compCount}名含む）—「GitHubへ保存」で共有できます`,'success');
+  showN(`読み込み完了：${mainPs.length}名（新規 ${added}件・更新 ${updated}件）—「GitHubへ保存」で共有できます`,'success');
 }
 
 // ============================
@@ -498,18 +486,16 @@ function switchTab(t){
 // レンダリング
 // ============================
 function renderStats(){
-  const fishers=ps.filter(p=>p.type!=='companion');
-  const comps=ps.filter(p=>p.type==='companion');
-  const tot=fishers.length;
-  if(!tot&&!comps.length){document.getElementById('statsBar').textContent='CSVを読み込んでください';return}
-  const asgnd=fishers.filter(p=>ga(p.id).boat).length;
-  const casgnd=comps.filter(p=>ga(p.id).boat).length;
+  const tot=ps.length;
+  if(!tot){document.getElementById('statsBar').textContent='CSVを読み込んでください';return}
+  const asgnd=ps.filter(p=>ga(p.id).boat).length;
+  const totalComp=Object.values(compAsgn).reduce((s,b)=>s+Object.values(b).filter(v=>v&&v.trim()!=='').length,0);
   const bc={};BOATS.forEach(b=>bc[b]=0);
-  fishers.forEach(p=>{const b=ga(p.id).boat;if(b)bc[b]++});
-  let h=`<span class="stat">🎣 釣り <b>${tot}</b>名</span>`;
-  if(comps.length)h+=`<span class="stat">👀 付添 <b>${comps.length}</b>名</span>`;
-  h+=`<span class="stat" style="color:var(--suc-tx)">✅ 割当済 <b>${asgnd+casgnd}</b>名</span>`;
-  h+=`<span class="stat" style="color:var(--warn-tx)">⏳ 未割当 <b>${(tot-asgnd)+(comps.length-casgnd)}</b>名</span>`;
+  ps.forEach(p=>{const b=ga(p.id).boat;if(b)bc[b]++});
+  let h=`<span class="stat">👥 <b>${tot}</b>名</span>`;
+  if(totalComp>0)h+=`<span class="stat">👀 付添 <b>${totalComp}</b>名</span>`;
+  h+=`<span class="stat" style="color:var(--suc-tx)">✅ 割当済 <b>${asgnd}</b>名</span>`;
+  h+=`<span class="stat" style="color:var(--warn-tx)">⏳ 未割当 <b>${tot-asgnd}</b>名</span>`;
   BOATS.forEach(b=>{if(bc[b]>0)h+=`<span class="stat"><span class="dot" style="background:${BC[b].dot}"></span>${b}：<b>${bc[b]}</b>名</span>`});
   document.getElementById('statsBar').innerHTML=h;
 }
@@ -560,51 +546,74 @@ const isTouch = () => ('ontouchstart' in window || navigator.maxTouchPoints > 0)
 let dragId=null, dragFrom=null;
 let selectedId=null;
 
-// 釣座グリッドを描画（type: 'fishing'|'companion'）
-function renderSeatGrid(seats, sm, c, seatType){
+// 釣座グリッドを描画
+function renderSeatGrid(seats, sm, col, seatType){
   let sg='';
   for(let s=1;s<=seats;s++){
-    const p=sm[s];
-    const isSel = p && p.id===selectedId;
-    if(p){
-      const isComp=p.type==='companion';
-      const sub=isComp?`付添 → ${esc(p.parentName||'')}`:(()=>{
-        const hc=p.compType&&p.compType!=='本人のみ';
-        const parts=[hc?'付添：'+(p.compName||p.compCnt):'',p.pref?'希望：'+p.pref.slice(0,14)+(p.pref.length>14?'…':''):''];
-        return parts.filter(Boolean).join(' / ');
-      })();
-      const pid=p.id.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-      const selRing=isSel?`box-shadow:0 0 0 3px ${c.dot};`:'';
-      sg+=`<div class="scard occupied" data-seat="${s}" data-stype="${seatType}" draggable="true"
-        ondragstart="onCardDragStart(event,${s},'${pid}','${seatType}')"
-        ondragend="onDragEnd(event)"
-        ondragover="onSeatDragOver(event)"
-        ondragleave="onDragLeave(event)"
-        ondrop="onSeatDrop(event,${s},'${seatType}')"
-        onclick="onSeatClick(event,${s},'${pid}','${seatType}')"
-        style="background:${c.bg};border-color:${c.br};${selRing}cursor:pointer">
-        <button class="del-btn" onclick="event.stopPropagation();unassign('${pid}')" title="割当を解除">✕</button>
-        <div class="snum" style="color:${c.tx}">${seatType==='companion'?'付添席':'釣座'} ${s}</div>
-        <div class="sname" style="color:${c.tx}">${esc(p.name)}</div>
-        ${sub?`<div class="sdet" style="color:${c.tx};opacity:0.8">${sub}</div>`:''}
+    if(seatType==='companion'){
+      // 付添席：テキスト入力方式
+      const boat=curBoat;
+      const val=(compAsgn[boat]&&compAsgn[boat][s])||'';
+      const hasPerson=val.trim()!=='';
+      const bg=hasPerson?`background:${col.bg};border-color:${col.br};`:'';
+      sg+=`<div class="scard" style="${bg}">
+        <div class="snum" style="color:${hasPerson?col.tx:'var(--txt3)'}">付添席 ${s}</div>
+        <input type="text" value="${esc(val)}"
+          placeholder="名前を入力..."
+          oninput="setCompSeat('${boat}',${s},this.value)"
+          style="width:100%;margin-top:4px;padding:4px 6px;border:0.5px solid var(--bdr2);border-radius:6px;font-family:inherit;font-size:13px;background:var(--bg);color:var(--txt);outline:none">
+        ${hasPerson?`<button onclick="setCompSeat('${boat}',${s},'');this.closest('.scard').querySelector('input').value=''" style="position:absolute;top:5px;right:6px;width:18px;height:18px;border-radius:50%;background:var(--err-bg);border:0.5px solid var(--err-br);color:var(--err-tx);font-size:11px;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center">✕</button>`:''}
       </div>`;
     }else{
-      const canDrop=seatType==='companion'
-        ?(selectedId&&ps.find(p=>p.id===selectedId)?.type==='companion')
-        :(selectedId&&ps.find(p=>p.id===selectedId)?.type!=='companion');
-      const hi=selectedId&&canDrop?`border:2px dashed ${c.dot};`:'';
-      sg+=`<div class="scard empty" data-seat="${s}" data-stype="${seatType}"
-        ondragover="onSeatDragOver(event)"
-        ondragleave="onDragLeave(event)"
-        ondrop="onSeatDrop(event,${s},'${seatType}')"
-        onclick="onEmptySeatClick(event,${s},'${seatType}')"
-        style="${hi}cursor:${selectedId&&canDrop?'pointer':'default'}">
-        <div class="snum muted">${seatType==='companion'?'付添席':'釣座'} ${s}</div>
-        <div style="font-size:12px;color:var(--txt3)">${selectedId&&canDrop?'ここへ移動':'空席'}</div>
-      </div>`;
+      // 釣座：従来のドラッグ&ドロップ方式
+      const p=sm[s];
+      const isSel=p&&p.id===selectedId;
+      if(p){
+        const hc=p.compType&&p.compType!=='本人のみ';
+        const sub=(()=>{
+          const parts=[hc?'付添：'+(p.compName||p.compCnt):'',p.pref?'希望：'+p.pref.slice(0,14)+(p.pref.length>14?'…':''):''];
+          return parts.filter(Boolean).join(' / ');
+        })();
+        const pid=p.id.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+        const selRing=isSel?`box-shadow:0 0 0 3px ${col.dot};`:'';
+        sg+=`<div class="scard occupied" data-seat="${s}" data-stype="fishing" draggable="true"
+          ondragstart="onCardDragStart(event,${s},'${pid}','fishing')"
+          ondragend="onDragEnd(event)"
+          ondragover="onSeatDragOver(event)"
+          ondragleave="onDragLeave(event)"
+          ondrop="onSeatDrop(event,${s},'fishing')"
+          onclick="onSeatClick(event,${s},'${pid}','fishing')"
+          style="background:${col.bg};border-color:${col.br};${selRing}cursor:pointer;position:relative">
+          <button class="del-btn" onclick="event.stopPropagation();unassign('${pid}')" title="割当を解除">✕</button>
+          <div class="snum" style="color:${col.tx}">釣座 ${s}</div>
+          <div class="sname" style="color:${col.tx}">${esc(p.name)}</div>
+          ${sub?`<div class="sdet" style="color:${col.tx};opacity:0.8">${esc(sub)}</div>`:''}
+        </div>`;
+      }else{
+        const canDrop=!!selectedId;
+        const hi=canDrop?`border:2px dashed ${col.dot};`:'';
+        sg+=`<div class="scard empty" data-seat="${s}" data-stype="fishing"
+          ondragover="onSeatDragOver(event)"
+          ondragleave="onDragLeave(event)"
+          ondrop="onSeatDrop(event,${s},'fishing')"
+          onclick="onEmptySeatClick(event,${s},'fishing')"
+          style="${hi}cursor:${canDrop?'pointer':'default'}">
+          <div class="snum muted">釣座 ${s}</div>
+          <div style="font-size:12px;color:var(--txt3)">${canDrop?'ここへ移動':'空席'}</div>
+        </div>`;
+      }
     }
   }
   return sg;
+}
+
+function setCompSeat(boat,seat,val){
+  if(!compAsgn[boat])compAsgn[boat]={};
+  if(val.trim()===''){delete compAsgn[boat][seat];}
+  else{compAsgn[boat][seat]=val;}
+  localSave();
+  renderStats();
+  if(curTab==='summary')renderSummary();
 }
 
 function renderBoat(){
@@ -633,57 +642,49 @@ function renderBoat(){
   // 釣座グリッド
   const fishGrid=renderSeatGrid(cfg.seats,smF,col,'fishing');
 
-  // 付添席グリッド
+  // 付添席グリッド（テキスト入力方式）
   let compSection='';
   if(cfg.compSeats>0){
-    const compGrid=renderSeatGrid(cfg.compSeats,smC,col,'companion');
+    const compGrid=renderSeatGrid(cfg.compSeats,{},col,'companion');
+    const filledComp=compAsgn[curBoat]?Object.values(compAsgn[curBoat]).filter(v=>v&&v.trim()!=='').length:0;
     compSection=`<div style="margin-top:18px">
-      <div class="muted" style="margin-bottom:10px;font-size:12px;font-weight:600;letter-spacing:0.3px">付添席 — ${Object.keys(smC).length} / ${cfg.compSeats}席</div>
-      <div class="sgrid">${compGrid}</div>
+      <div class="muted" style="margin-bottom:10px;font-size:12px;font-weight:600;letter-spacing:0.3px">付添席 — ${filledComp} / ${cfg.compSeats}席　<span style="font-weight:400;opacity:0.7">（名前を直接入力してください）</span></div>
+      <div class="sgrid" style="position:relative">${compGrid}</div>
     </div>`;
   }
 
-  // 未割当リスト
-  const unassignedF=ps.filter(p=>p.type!=='companion'&&!ga(p.id).boat);
-  const unassignedC=ps.filter(p=>p.type==='companion'&&!ga(p.id).boat);
-  const allUnassigned=[...unassignedF,...unassignedC];
-
+  // 未割当リスト（釣り人のみ）
+  const unassigned=ps.filter(p=>!ga(p.id).boat);
   let touchHint=isTouch()?'<div style="font-size:11px;color:var(--txt2);margin-bottom:8px">名前をタップ→釣座をタップで配置 ／ ✕ で解除</div>':'';
-
   let ubox;
-  if(!allUnassigned.length){
+  if(!unassigned.length){
     ubox='<div class="ubox" style="text-align:center;color:var(--suc-tx)">全員割当済 ✅</div>';
   }else{
-    const makePill=p=>{
+    const pills=unassigned.map(p=>{
       const pid=p.id.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
       const isSel=p.id===selectedId;
       const selSt=isSel?`background:${BC[curBoat].bg};border:2px solid ${BC[curBoat].dot};color:${BC[curBoat].tx};font-weight:600;`:'';
-      const badge=p.type==='companion'?'<span style="font-size:10px;margin-left:3px;opacity:0.7">付添</span>':'';
       return`<span class="pill" draggable="true" style="${selSt}"
         ondragstart="onPillDragStart(event,'${pid}')"
         ondragend="onDragEnd(event)"
-        onclick="onPillClick(event,'${pid}')">${esc(p.name)}${badge}${isSel?' ✓':''}</span>`;
-    };
-    const fisherPills=unassignedF.map(makePill).join('');
-    const compPills=unassignedC.map(makePill).join('');
-    let pillsHtml='';
-    if(fisherPills) pillsHtml+=`<div style="margin-bottom:6px"><span style="font-size:11px;color:var(--txt2);margin-right:4px">🎣</span>${fisherPills}</div>`;
-    if(compPills)   pillsHtml+=`<div><span style="font-size:11px;color:var(--txt2);margin-right:4px">👀 付添</span>${compPills}</div>`;
+        onclick="onPillClick(event,'${pid}')">${esc(p.name)}${isSel?' ✓':''}</span>`;
+    }).join('');
     ubox=`<div class="ubox" id="ubox"
       ondragover="onUboxDragOver(event)"
       ondragleave="onDragLeave(event)"
       ondrop="onUboxDrop(event)"
       onclick="onUboxClick(event)">
       ${touchHint}
-      <h3>未割当（${allUnassigned.length}名）<span style="font-weight:400;font-size:11px"> — ドラッグ or タップで割当 ／ ✕ で解除</span></h3>
-      <div class="pills" style="margin-top:10px">${pillsHtml}</div>
+      <h3>未割当（${unassigned.length}名）<span style="font-weight:400;font-size:11px"> — ドラッグ or タップで割当 ／ ✕ で解除</span></h3>
+      <div class="pills" style="margin-top:8px">${pills}</div>
     </div>`;
   }
 
-  const fisherCnt=ps.filter(p=>p.type!=='companion'&&ga(p.id).boat===curBoat).length;
+  const fisherCnt=ps.filter(p=>ga(p.id).boat===curBoat).length;
+  const filledCompCnt=compAsgn[curBoat]?Object.values(compAsgn[curBoat]).filter(v=>v&&v.trim()!=='').length:0;
   document.getElementById('boatContent').innerHTML=
     `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-      <span class="muted">${curBoat} — 釣座 <b style="color:var(--txt)">${fisherCnt}/${cfg.seats}</b>名${cfg.compSeats>0?' ／ 付添席 <b style="color:var(--txt)">'+Object.keys(smC).length+'/'+cfg.compSeats+'</b>名':''}</span>
+      <span class="muted">${curBoat} — 釣座 <b style="color:var(--txt)">${fisherCnt}/${cfg.seats}</b>名${cfg.compSeats>0?' ／ 付添席 <b style="color:var(--txt)">'+filledCompCnt+'/'+cfg.compSeats+'</b>名':''}</span>
       <button onclick="selectedId=null;renderBoat()" style="font-size:11px;padding:4px 10px;color:var(--txt2)">⟳ 更新</button>
     </div>`+
     `<div class="sgrid">${fishGrid}</div>${compSection}${ubox}`;
@@ -797,12 +798,10 @@ function unassign(id){
 }
 
 function renderSummary(){
-  const fishers=ps.filter(p=>p.type!=='companion');
-  const compPersons=ps.filter(p=>p.type==='companion');
-  const comp=compPersons.length;
   const bc={},bs={};BOATS.forEach(b=>{bc[b]=0;bs[b]=[]});
-  fishers.forEach(p=>{const a=ga(p.id);if(a.boat){bc[a.boat]++;if(a.seat)bs[a.boat].push(+a.seat)}});
-  const tot=fishers.length,asgnd=fishers.filter(p=>ga(p.id).boat).length;
+  ps.forEach(p=>{const a=ga(p.id);if(a.boat){bc[a.boat]++;if(a.seat)bs[a.boat].push(+a.seat)}});
+  const tot=ps.length,asgnd=ps.filter(p=>ga(p.id).boat).length;
+  const comp=Object.values(compAsgn).reduce((s,b)=>s+Object.values(b).filter(v=>v&&v.trim()!=='').length,0);
   const ren=ps.filter(p=>p.rental&&!p.rental.includes('無し')).length;
   const ts=ps.filter(p=>p.tshirt&&!p.tshirt.includes('しない')).length;
   document.getElementById('summaryContent').innerHTML=`
@@ -816,8 +815,8 @@ function renderSummary(){
     </div>
     <div class="sgrid2">${BOATS.map(b=>{
       const col=BC[b],cfg=BOAT_CFG[b];
-      const fisherCnt=ps.filter(p=>p.type!=='companion'&&ga(p.id).boat===b).length;
-      const compCnt=ps.filter(p=>p.type==='companion'&&ga(p.id).boat===b).length;
+      const fisherCnt=ps.filter(p=>ga(p.id).boat===b).length;
+      const compCnt=compAsgn[b]?Object.values(compAsgn[b]).filter(v=>v&&v.trim()!=='').length:0;
       const pct=Math.round(fisherCnt/cfg.seats*100);
       const rem=Math.max(0,cfg.seats-fisherCnt);
       const remC=Math.max(0,cfg.compSeats-compCnt);
@@ -846,8 +845,15 @@ function showN(msg,type='info'){
 
 function doExport(){
   if(!ps.length){showN('データがありません','error');return}
-  const rows=[['名前','種別','電話番号','船番号','釣座種別','釣座番号','同船希望','レンタル','Tシャツ・サイズ','備考']];
-  ps.forEach(p=>{const a=ga(p.id);rows.push([p.name,p.type==='companion'?'付添':'釣り',p.phone,a.boat||'',a.seatType==='companion'?'付添席':'釣座',a.seat||'',p.pref,p.rental,(p.tshirt||'')+(p.tsize?' '+p.tsize:''),p.notes])});
+  const rows=[['名前','電話番号','船番号','釣座番号','同船希望','レンタル','Tシャツ・サイズ','備考']];
+  ps.forEach(p=>{const a=ga(p.id);rows.push([p.name,p.phone,a.boat||'',a.seat||'',p.pref,p.rental,(p.tshirt||'')+(p.tsize?' '+p.tsize:''),p.notes])});
+  // 付添席を追加
+  BOATS.forEach(b=>{
+    if(!compAsgn[b])return;
+    Object.entries(compAsgn[b]).forEach(([seat,name])=>{
+      if(name&&name.trim())rows.push([name,'',b,'付添席'+seat,'','','','付添']);
+    });
+  });
   const csv=rows.map(r=>r.map(v=>`"${(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
   const a=document.createElement('a');
   const d=new Date();
@@ -864,7 +870,7 @@ function doClear(){
     setTimeout(()=>{clrN=0;document.getElementById('clrBtn').textContent='🗑 削除';document.getElementById('clrBtn').style.background=''},4000);
     return;
   }
-  clrN=0;ps=[];asgn={};ghSHA='';
+  clrN=0;ps=[];asgn={};compAsgn={};ghSHA='';
   try{localStorage.removeItem(LSK)}catch{}
   document.getElementById('clrBtn').textContent='🗑 削除';
   document.getElementById('clrBtn').style.background='';
