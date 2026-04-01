@@ -52,6 +52,7 @@ button:disabled{opacity:0.4;cursor:not-allowed}
 .notif.success{background:var(--suc-bg);color:var(--suc-tx);border-color:var(--suc-br)}
 .notif.error{background:var(--err-bg);color:var(--err-tx);border-color:var(--err-br)}
 .notif.warning{background:var(--warn-bg);color:var(--warn-tx);border-color:var(--warn-br)}
+.notif.warning{background:var(--warn-bg);color:var(--warn-tx);border-color:var(--warn-br)}
 
 /* GitHub設定パネル */
 .gh-panel{background:var(--bg);border:0.5px solid var(--pur-br);border-radius:var(--radius-lg);padding:16px 20px;margin-bottom:14px}
@@ -181,6 +182,7 @@ input.sin{width:50px;padding:5px 7px;border:0.5px solid var(--bdr2);border-radiu
         <select class="fsel" id="bfil" onchange="renderList()">
           <option value="">全員表示</option>
           <option value="__none">未割当のみ</option>
+          <option value="__comp">付添者のみ</option>
           <option value="春定丸">春定丸</option>
           <option value="甚五郎丸">甚五郎丸</option>
           <option value="日吉丸">日吉丸</option>
@@ -254,7 +256,14 @@ const BC={
   '竹宝丸':{bg:'#f9e8e2',br:'#f5c4b3',tx:'#712b13',dot:'#d85a30'},
   '高栄丸':{bg:'#eeedfe',br:'#cecbf6',tx:'#3c3489',dot:'#7f77dd'},
 };
-const CAP=25, LSK='ikadenightv2', GHSK='ikaghconfig';
+const BOAT_CFG={
+  '春定丸': {seats:21, compSeats:5},
+  '甚五郎丸':{seats:16, compSeats:6},
+  '日吉丸':  {seats:19, compSeats:3},
+  '竹宝丸':  {seats:22, compSeats:0},
+  '高栄丸':  {seats:12, compSeats:2},
+};
+const LSK='ikadenightv2', GHSK='ikaghconfig';
 let ps=[], asgn={}, curTab='list', curBoat='春定丸', clrN=0;
 let ghSHA=''; // GitHubファイルの現在のSHA（更新時に必要）
 let lastSyncTime='';
@@ -410,7 +419,7 @@ function csvParse(text){
 function gf(hs,r,k){const i=hs.findIndex(h=>h.trim()===k.trim());return i>=0?(r[i]||'').trim():''}
 function mapP(hs,r){
   const nm=gf(hs,r,'お名前'),ts=gf(hs,r,'タイムスタンプ');
-  return{id:ts||nm,name:nm,phone:gf(hs,r,'電話番号'),
+  return{id:ts||nm,name:nm,type:'fisher',phone:gf(hs,r,'電話番号'),
     compType:gf(hs,r,'付添（つきそい）（釣りをしない方）の有無'),
     compCnt:gf(hs,r,'付添（つきそい）人数'),
     compName:gf(hs,r,'付添（つきそい）者名'),
@@ -420,17 +429,51 @@ function mapP(hs,r){
     tsize:gf(hs,r,'サイズを選択してください'),
     notes:gf(hs,r,'ご質問・ご要望・その他（自由記述）')};
 }
+// 付添者名文字列をパースして個人リストに変換
+function parseCompanions(mainPerson){
+  const n=mainPerson.compName||'';
+  if(!n||n==='nan')return[];
+  // 区切り: 読点・カンマ・全角スペース / ただし「池田 真人、池田 歩叶」の半角スペースはファーストネームの区切り
+  const parts=n.split(/[\u3001,\uff0c\n]+/).map(s=>s.trim()).filter(s=>s&&s!=='nan');
+  return parts.map((name,i)=>({
+    id: mainPerson.id+'_comp_'+i,
+    name: name,
+    type: 'companion',
+    parentId: mainPerson.id,
+    parentName: mainPerson.name,
+    phone:'', compType:'', compCnt:'', compName:'',
+    rental:'', pref:'', tshirt:'', tsize:'', notes:''
+  }));
+}
 async function importCSV(file){
   const text=await file.text();
   const rows=csvParse(text);
   if(rows.length<2){showN('CSVの形式が正しくありません','error');return}
   const hs=rows[0];
-  const nps=rows.slice(1).map(r=>mapP(hs,r)).filter(p=>p.name);
+  const mainPs=rows.slice(1).map(r=>mapP(hs,r)).filter(p=>p.name);
+  // 付添者を展開
+  const allNew=[];
+  mainPs.forEach(p=>{
+    allNew.push(p);
+    parseCompanions(p).forEach(cp=>allNew.push(cp));
+  });
   const ex=new Map(ps.map(p=>[p.id,p]));
   let added=0,updated=0;
-  nps.forEach(p=>{if(!ex.has(p.id)){ps.push(p);added++}else{Object.assign(ex.get(p.id),p);updated++}});
+  allNew.forEach(p=>{
+    if(!ex.has(p.id)){ps.push(p);added++}
+    else{
+      // 付添者は親の情報が変わった可能性があるので再生成
+      if(p.type==='companion'){Object.assign(ex.get(p.id),p);}
+      else{Object.assign(ex.get(p.id),p);}
+      updated++;
+    }
+  });
+  // 孤立した付添者を削除（親が消えた場合）
+  const mainIds=new Set(mainPs.map(p=>p.id));
+  ps=ps.filter(p=>p.type!=='companion'||mainIds.has(p.parentId));
   localSave();render();
-  showN(`読み込み完了：${nps.length}件（新規 ${added}件・更新 ${updated}件）—「GitHubへ保存」で共有できます`,'success');
+  const compCount=allNew.filter(p=>p.type==='companion').length;
+  showN(`読み込み完了：${mainPs.length}名（付添${compCount}名含む）—「GitHubへ保存」で共有できます`,'success');
 }
 
 // ============================
@@ -455,12 +498,18 @@ function switchTab(t){
 // レンダリング
 // ============================
 function renderStats(){
-  const tot=ps.length;
-  if(!tot){document.getElementById('statsBar').textContent='CSVを読み込んでください';return}
-  const asgnd=ps.filter(p=>ga(p.id).boat).length;
+  const fishers=ps.filter(p=>p.type!=='companion');
+  const comps=ps.filter(p=>p.type==='companion');
+  const tot=fishers.length;
+  if(!tot&&!comps.length){document.getElementById('statsBar').textContent='CSVを読み込んでください';return}
+  const asgnd=fishers.filter(p=>ga(p.id).boat).length;
+  const casgnd=comps.filter(p=>ga(p.id).boat).length;
   const bc={};BOATS.forEach(b=>bc[b]=0);
-  ps.forEach(p=>{const b=ga(p.id).boat;if(b)bc[b]++});
-  let h=`<span class="stat">👥 <b>${tot}</b>名</span><span class="stat" style="color:var(--suc-tx)">✅ 割当済 <b>${asgnd}</b>名</span><span class="stat" style="color:var(--warn-tx)">⏳ 未割当 <b>${tot-asgnd}</b>名</span>`;
+  fishers.forEach(p=>{const b=ga(p.id).boat;if(b)bc[b]++});
+  let h=`<span class="stat">🎣 釣り <b>${tot}</b>名</span>`;
+  if(comps.length)h+=`<span class="stat">👀 付添 <b>${comps.length}</b>名</span>`;
+  h+=`<span class="stat" style="color:var(--suc-tx)">✅ 割当済 <b>${asgnd+casgnd}</b>名</span>`;
+  h+=`<span class="stat" style="color:var(--warn-tx)">⏳ 未割当 <b>${(tot-asgnd)+(comps.length-casgnd)}</b>名</span>`;
   BOATS.forEach(b=>{if(bc[b]>0)h+=`<span class="stat"><span class="dot" style="background:${BC[b].dot}"></span>${b}：<b>${bc[b]}</b>名</span>`});
   document.getElementById('statsBar').innerHTML=h;
 }
@@ -470,10 +519,11 @@ function renderList(){
   const q=(document.getElementById('srchIn')?.value||'').toLowerCase();
   const bf=document.getElementById('bfil')?.value||'';
   let fl=ps.filter(p=>{
-    if(q&&!p.name.toLowerCase().includes(q)&&!(p.pref||'').toLowerCase().includes(q))return false;
+    if(q&&!p.name.toLowerCase().includes(q)&&!(p.pref||'').toLowerCase().includes(q)&&!(p.parentName||'').toLowerCase().includes(q))return false;
     const b=ga(p.id).boat;
     if(bf==='__none'&&b)return false;
-    if(bf&&bf!=='__none'&&b!==bf)return false;
+    if(bf==='__comp'&&p.type!=='companion')return false;
+    if(bf&&bf!=='__none'&&bf!=='__comp'&&b!==bf)return false;
     return true;
   });
   if(!fl.length){
@@ -490,7 +540,7 @@ function renderList(){
     const id2=esc(p.id).replace(/'/g,"\\'");
     return`<tr>
       <td class="muted">${idx}</td>
-      <td><div style="font-weight:600">${esc(p.name)}</div>${p.notes?`<div class="muted" style="margin-top:2px">${esc(p.notes.slice(0,24))}${p.notes.length>24?'…':''}</div>`:''}</td>
+      <td><div style="font-weight:600">${esc(p.name)}${p.type==='companion'?'<span style="font-size:10px;padding:1px 5px;border-radius:10px;background:var(--warn-bg);color:var(--warn-tx);margin-left:5px;vertical-align:middle">付添</span>':''}</div>${p.type==='companion'?`<div class="muted" style="margin-top:2px">→ ${esc(p.parentName||'')}の付添</div>`:(p.notes?`<div class="muted" style="margin-top:2px">${esc(p.notes.slice(0,24))}${p.notes.length>24?'…':''}</div>`:'')}</td>
       <td>${hc?`<span style="font-size:12px">${esc(p.compName||p.compCnt||'付添あり')}</span>`:'<span class="muted">-</span>'}</td>
       <td><span style="font-size:12px;color:var(--txt2)">${p.pref?esc(p.pref.slice(0,20))+(p.pref.length>20?'…':''):'-'}</span></td>
       <td>${ren}</td><td>${ts}</td>
@@ -498,7 +548,7 @@ function renderList(){
         <span class="chip" style="${cs}">${a.boat||'未割当'}</span>
         <select class="bsel" onchange="setBoat('${id2}',this.value)"><option value="">-- 未割当 --</option>${bopts}</select>
       </div></td>
-      <td><input class="sin" type="number" min="1" max="25" value="${a.seat||''}" placeholder="-" onchange="setSeat('${id2}',this.value)"></td>
+      <td><input class="sin" type="number" min="1" max="30" value="${a.seat||''}" placeholder="-" onchange="setSeat('${id2}',this.value)"></td>
     </tr>`;
   }).join('');
 }
@@ -508,151 +558,176 @@ const isTouch = () => ('ontouchstart' in window || navigator.maxTouchPoints > 0)
 
 // ===== ドラッグ&ドロップ／タップ選択 共通状態 =====
 let dragId=null, dragFrom=null;
-let selectedId=null; // タッチ用：現在選択中のID
+let selectedId=null;
 
-function renderBoat(){
-  document.getElementById('boatNav').innerHTML=BOATS.map(b=>{
-    const cnt=ps.filter(p=>ga(p.id).boat===b).length,c=BC[b],act=b===curBoat;
-    const st=act?`background:${c.bg};color:${c.tx};border-color:${c.br};font-weight:600`:'';
-    return`<button class="bntb" style="${st}" onclick="curBoat='${b}';selectedId=null;renderBoat()">${b} <span style="font-size:11px;opacity:0.7">${cnt}名</span></button>`;
-  }).join('');
-
-  const bp=ps.filter(p=>ga(p.id).boat===curBoat);
-  const sm={};bp.forEach(p=>{const s=parseInt(ga(p.id).seat);if(s>0)sm[s]=p});
-  const c=BC[curBoat];
+// 釣座グリッドを描画（type: 'fishing'|'companion'）
+function renderSeatGrid(seats, sm, c, seatType){
   let sg='';
-
-  for(let s=1;s<=CAP;s++){
+  for(let s=1;s<=seats;s++){
     const p=sm[s];
     const isSel = p && p.id===selectedId;
     if(p){
-      const hc=p.compType&&p.compType!=='本人のみ';
-      const det=[hc?'付添：'+(p.compName||p.compCnt):'',p.pref?'希望：'+p.pref.slice(0,16)+(p.pref.length>16?'…':''):''].filter(Boolean).join(' / ');
+      const isComp=p.type==='companion';
+      const sub=isComp?`付添 → ${esc(p.parentName||'')}`:(()=>{
+        const hc=p.compType&&p.compType!=='本人のみ';
+        const parts=[hc?'付添：'+(p.compName||p.compCnt):'',p.pref?'希望：'+p.pref.slice(0,14)+(p.pref.length>14?'…':''):''];
+        return parts.filter(Boolean).join(' / ');
+      })();
       const pid=p.id.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-      const selRing = isSel ? `box-shadow:0 0 0 3px ${c.dot};` : '';
-      sg+=`<div class="scard occupied" data-seat="${s}" draggable="true"
-        ondragstart="onCardDragStart(event,${s},'${pid}')"
+      const selRing=isSel?`box-shadow:0 0 0 3px ${c.dot};`:'';
+      sg+=`<div class="scard occupied" data-seat="${s}" data-stype="${seatType}" draggable="true"
+        ondragstart="onCardDragStart(event,${s},'${pid}','${seatType}')"
         ondragend="onDragEnd(event)"
         ondragover="onSeatDragOver(event)"
         ondragleave="onDragLeave(event)"
-        ondrop="onSeatDrop(event,${s})"
-        onclick="onSeatClick(event,${s},'${pid}')"
+        ondrop="onSeatDrop(event,${s},'${seatType}')"
+        onclick="onSeatClick(event,${s},'${pid}','${seatType}')"
         style="background:${c.bg};border-color:${c.br};${selRing}cursor:pointer">
         <button class="del-btn" onclick="event.stopPropagation();unassign('${pid}')" title="割当を解除">✕</button>
-        <div class="snum" style="color:${c.tx}">釣座 ${s}</div>
+        <div class="snum" style="color:${c.tx}">${seatType==='companion'?'付添席':'釣座'} ${s}</div>
         <div class="sname" style="color:${c.tx}">${esc(p.name)}</div>
-        ${det?`<div class="sdet" style="color:${c.tx};opacity:0.8">${esc(det)}</div>`:''}
+        ${sub?`<div class="sdet" style="color:${c.tx};opacity:0.8">${sub}</div>`:''}
       </div>`;
     }else{
-      // 選択中の人がいる場合、空席を強調
-      const hi = selectedId ? `border:2px dashed ${c.dot};` : '';
-      sg+=`<div class="scard empty" data-seat="${s}"
+      const canDrop=seatType==='companion'
+        ?(selectedId&&ps.find(p=>p.id===selectedId)?.type==='companion')
+        :(selectedId&&ps.find(p=>p.id===selectedId)?.type!=='companion');
+      const hi=selectedId&&canDrop?`border:2px dashed ${c.dot};`:'';
+      sg+=`<div class="scard empty" data-seat="${s}" data-stype="${seatType}"
         ondragover="onSeatDragOver(event)"
         ondragleave="onDragLeave(event)"
-        ondrop="onSeatDrop(event,${s})"
-        onclick="onEmptySeatClick(event,${s})"
-        style="${hi}cursor:${selectedId?'pointer':'default'}">
-        <div class="snum muted">釣座 ${s}</div>
-        <div style="font-size:12px;color:var(--txt3)">${selectedId?'ここへ移動':'空席'}</div>
+        ondrop="onSeatDrop(event,${s},'${seatType}')"
+        onclick="onEmptySeatClick(event,${s},'${seatType}')"
+        style="${hi}cursor:${selectedId&&canDrop?'pointer':'default'}">
+        <div class="snum muted">${seatType==='companion'?'付添席':'釣座'} ${s}</div>
+        <div style="font-size:12px;color:var(--txt3)">${selectedId&&canDrop?'ここへ移動':'空席'}</div>
       </div>`;
     }
   }
+  return sg;
+}
 
-  const unassigned=ps.filter(p=>!ga(p.id).boat);
-  let touchHint = isTouch()
-    ? '<div style="font-size:11px;color:var(--txt2);margin-bottom:8px">名前をタップして選択 → 釣座をタップして配置</div>'
-    : '';
+function renderBoat(){
+  document.getElementById('boatNav').innerHTML=BOATS.map(b=>{
+    const cfg=BOAT_CFG[b];
+    const fisherCnt=ps.filter(p=>p.type!=='companion'&&ga(p.id).boat===b).length;
+    const compCnt=ps.filter(p=>p.type==='companion'&&ga(p.id).boat===b).length;
+    const act=b===curBoat,col=BC[b];
+    const st=act?`background:${col.bg};color:${col.tx};border-color:${col.br};font-weight:600`:'';
+    const label=cfg.compSeats>0?`${fisherCnt}+${compCnt}名`:`${fisherCnt}名`;
+    return`<button class="bntb" style="${st}" onclick="curBoat='${b}';selectedId=null;renderBoat()">${b} <span style="font-size:11px;opacity:0.7">${label}</span></button>`;
+  }).join('');
+
+  const cfg=BOAT_CFG[curBoat];
+  const col=BC[curBoat];
+  const smF={},smC={};
+  ps.forEach(p=>{
+    const a=ga(p.id);
+    if(a.boat!==curBoat)return;
+    const s=parseInt(a.seat);
+    if(!s)return;
+    if(a.seatType==='companion')smC[s]=p;
+    else smF[s]=p;
+  });
+
+  // 釣座グリッド
+  const fishGrid=renderSeatGrid(cfg.seats,smF,col,'fishing');
+
+  // 付添席グリッド
+  let compSection='';
+  if(cfg.compSeats>0){
+    const compGrid=renderSeatGrid(cfg.compSeats,smC,col,'companion');
+    compSection=`<div style="margin-top:18px">
+      <div class="muted" style="margin-bottom:10px;font-size:12px;font-weight:600;letter-spacing:0.3px">付添席 — ${Object.keys(smC).length} / ${cfg.compSeats}席</div>
+      <div class="sgrid">${compGrid}</div>
+    </div>`;
+  }
+
+  // 未割当リスト
+  const unassignedF=ps.filter(p=>p.type!=='companion'&&!ga(p.id).boat);
+  const unassignedC=ps.filter(p=>p.type==='companion'&&!ga(p.id).boat);
+  const allUnassigned=[...unassignedF,...unassignedC];
+
+  let touchHint=isTouch()?'<div style="font-size:11px;color:var(--txt2);margin-bottom:8px">名前をタップ→釣座をタップで配置 ／ ✕ で解除</div>':'';
+
   let ubox;
-  if(!unassigned.length){
+  if(!allUnassigned.length){
     ubox='<div class="ubox" style="text-align:center;color:var(--suc-tx)">全員割当済 ✅</div>';
   }else{
-    const pills=unassigned.map(p=>{
+    const makePill=p=>{
       const pid=p.id.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
-      const isSel = p.id===selectedId;
-      const selSt = isSel
-        ? `background:${BC[curBoat].bg};border:2px solid ${BC[curBoat].dot};color:${BC[curBoat].tx};font-weight:600;`
-        : '';
-      return`<span class="pill" draggable="true"
-        style="${selSt}"
+      const isSel=p.id===selectedId;
+      const selSt=isSel?`background:${BC[curBoat].bg};border:2px solid ${BC[curBoat].dot};color:${BC[curBoat].tx};font-weight:600;`:'';
+      const badge=p.type==='companion'?'<span style="font-size:10px;margin-left:3px;opacity:0.7">付添</span>':'';
+      return`<span class="pill" draggable="true" style="${selSt}"
         ondragstart="onPillDragStart(event,'${pid}')"
         ondragend="onDragEnd(event)"
-        onclick="onPillClick(event,'${pid}')">${esc(p.name)}${isSel?' ✓':''}</span>`;
-    }).join('');
+        onclick="onPillClick(event,'${pid}')">${esc(p.name)}${badge}${isSel?' ✓':''}</span>`;
+    };
+    const fisherPills=unassignedF.map(makePill).join('');
+    const compPills=unassignedC.map(makePill).join('');
+    let pillsHtml='';
+    if(fisherPills) pillsHtml+=`<div style="margin-bottom:6px"><span style="font-size:11px;color:var(--txt2);margin-right:4px">🎣</span>${fisherPills}</div>`;
+    if(compPills)   pillsHtml+=`<div><span style="font-size:11px;color:var(--txt2);margin-right:4px">👀 付添</span>${compPills}</div>`;
     ubox=`<div class="ubox" id="ubox"
       ondragover="onUboxDragOver(event)"
       ondragleave="onDragLeave(event)"
       ondrop="onUboxDrop(event)"
       onclick="onUboxClick(event)">
       ${touchHint}
-      <h3>未割当（${unassigned.length}名）<span style="font-weight:400;font-size:11px"> — ドラッグ or タップで割当 ／ ✕ で解除</span></h3>
-      <div class="pills">${pills}</div>
+      <h3>未割当（${allUnassigned.length}名）<span style="font-weight:400;font-size:11px"> — ドラッグ or タップで割当 ／ ✕ で解除</span></h3>
+      <div class="pills" style="margin-top:10px">${pillsHtml}</div>
     </div>`;
   }
 
+  const fisherCnt=ps.filter(p=>p.type!=='companion'&&ga(p.id).boat===curBoat).length;
   document.getElementById('boatContent').innerHTML=
     `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-      <span class="muted">${curBoat} — <b style="color:var(--txt)">${bp.length}</b>名 / 定員目安 ${CAP}名</span>
+      <span class="muted">${curBoat} — 釣座 <b style="color:var(--txt)">${fisherCnt}/${cfg.seats}</b>名${cfg.compSeats>0?' ／ 付添席 <b style="color:var(--txt)">'+Object.keys(smC).length+'/'+cfg.compSeats+'</b>名':''}</span>
       <button onclick="selectedId=null;renderBoat()" style="font-size:11px;padding:4px 10px;color:var(--txt2)">⟳ 更新</button>
     </div>`+
-    `<div class="sgrid">${sg}</div>${ubox}`;
+    `<div class="sgrid">${fishGrid}</div>${compSection}${ubox}`;
 }
 
 // ===== タッチ用クリックハンドラ =====
 function onPillClick(e,pid){
   e.stopPropagation();
-  selectedId = (selectedId===pid) ? null : pid;
+  selectedId=(selectedId===pid)?null:pid;
   renderBoat();
 }
-function onSeatClick(e,seat,pid){
+function onSeatClick(e,seat,pid,seatType){
   e.stopPropagation();
-  if(!selectedId){
-    // 誰も選択していない → この人を選択
-    selectedId = pid;
-    renderBoat();
-    return;
-  }
-  if(selectedId===pid){
-    // 同じ人をタップ → 選択解除
-    selectedId=null;
-    renderBoat();
-    return;
-  }
-  // 別の人が選択中 → 入れ替え
-  const bp=ps.filter(p=>ga(p.id).boat===curBoat);
-  const sm={};bp.forEach(p=>{const s=parseInt(ga(p.id).seat);if(s>0)sm[s]=p});
-  const selPerson = ps.find(p=>p.id===selectedId);
-  const selA = ga(selectedId);
-  if(selPerson){
-    // 選択中の人の元の座席に今の人を移す
-    if(!asgn[pid])asgn[pid]={};
-    if(selA.boat){
-      asgn[pid].boat=selA.boat;
-      asgn[pid].seat=selA.seat;
-    }else{
-      asgn[pid]={boat:'',seat:''};
-    }
-    if(!asgn[selectedId])asgn[selectedId]={};
-    asgn[selectedId].boat=curBoat;
-    asgn[selectedId].seat=String(seat);
-  }
+  if(!selectedId){selectedId=pid;renderBoat();return;}
+  if(selectedId===pid){selectedId=null;renderBoat();return;}
+  const selA=ga(selectedId);
+  const targetA=ga(pid);
+  // 入れ替え
+  if(!asgn[pid])asgn[pid]={};
+  if(selA.boat){asgn[pid].boat=selA.boat;asgn[pid].seat=selA.seat;asgn[pid].seatType=selA.seatType||'fishing';}
+  else{asgn[pid]={boat:'',seat:'',seatType:'fishing'};}
+  if(!asgn[selectedId])asgn[selectedId]={};
+  asgn[selectedId].boat=curBoat;asgn[selectedId].seat=String(seat);asgn[selectedId].seatType=seatType;
   selectedId=null;
   localSave();renderStats();renderList();renderBoat();
 }
-function onEmptySeatClick(e,seat){
+function onEmptySeatClick(e,seat,seatType){
   e.stopPropagation();
   if(!selectedId)return;
+  const p=ps.find(q=>q.id===selectedId);
+  if(!p)return;
+  // 型チェック：付添席には付添者、釣座には釣り人
+  if(seatType==='companion'&&p.type!=='companion'){showN('付添席には付添者のみ割当できます','warning');return;}
+  if(seatType==='fishing'&&p.type==='companion'){showN('釣座には釣り人のみ割当できます','warning');return;}
   if(!asgn[selectedId])asgn[selectedId]={};
-  asgn[selectedId].boat=curBoat;
-  asgn[selectedId].seat=String(seat);
+  asgn[selectedId].boat=curBoat;asgn[selectedId].seat=String(seat);asgn[selectedId].seatType=seatType;
   selectedId=null;
   localSave();renderStats();renderList();renderBoat();
 }
 function onUboxClick(e){
-  // 未割当エリアをタップ → 選択中の割当済み人を解除
   if(!selectedId)return;
   const a=ga(selectedId);
-  if(!a.boat)return; // すでに未割当
-  asgn[selectedId]={boat:'',seat:''};
+  if(!a.boat)return;
+  asgn[selectedId]={boat:'',seat:'',seatType:''};
   selectedId=null;
   localSave();renderStats();renderList();renderBoat();
   showN('割当を解除しました','info');
@@ -664,15 +739,15 @@ function onPillDragStart(e,pid){
   e.currentTarget.classList.add('dragging');
   e.dataTransfer.effectAllowed='move';
 }
-function onCardDragStart(e,seat,pid){
-  dragId=pid;dragFrom={type:'seat',boat:curBoat,seat};
+function onCardDragStart(e,seat,pid,seatType){
+  dragId=pid;dragFrom={type:'seat',boat:curBoat,seat,seatType};
   e.currentTarget.classList.add('dragging');
   e.dataTransfer.effectAllowed='move';
 }
 function onDragEnd(e){
   e.currentTarget.classList.remove('dragging');
   document.querySelectorAll('.drag-over').forEach(el=>el.classList.remove('drag-over'));
-  setTimeout(()=>{ if(curTab==='boat') renderBoat(); },100);
+  setTimeout(()=>{if(curTab==='boat')renderBoat();},100);
 }
 function onSeatDragOver(e){
   e.preventDefault();e.dataTransfer.dropEffect='move';
@@ -682,24 +757,25 @@ function onDragLeave(e){e.currentTarget.classList.remove('drag-over')}
 function onUboxDragOver(e){
   if(dragFrom&&dragFrom.type==='seat'){e.preventDefault();e.currentTarget.classList.add('drag-over')}
 }
-function onSeatDrop(e,targetSeat){
+function onSeatDrop(e,targetSeat,seatType){
   e.preventDefault();e.currentTarget.classList.remove('drag-over');
   if(!dragId)return;
-  const bp=ps.filter(p=>ga(p.id).boat===curBoat);
-  const sm={};bp.forEach(p=>{const s=parseInt(ga(p.id).seat);if(s>0)sm[s]=p});
-  const existing=sm[targetSeat];
+  const dragPerson=ps.find(p=>p.id===dragId);
+  if(!dragPerson)return;
+  if(seatType==='companion'&&dragPerson.type!=='companion'){showN('付添席には付添者のみ割当できます','warning');dragId=null;dragFrom=null;return;}
+  if(seatType==='fishing'&&dragPerson.type==='companion'){showN('釣座には釣り人のみ割当できます','warning');dragId=null;dragFrom=null;return;}
+  // 移動先に誰かいたら入れ替え
+  const smTarget={};
+  ps.forEach(p=>{const a=ga(p.id);if(a.boat===curBoat&&a.seatType===seatType){const s=parseInt(a.seat);if(s>0)smTarget[s]=p;}});
+  const existing=smTarget[targetSeat];
   if(existing&&existing.id!==dragId){
-    if(dragFrom&&dragFrom.type==='seat'){
+    if(dragFrom&&dragFrom.type==='seat'&&dragFrom.seatType===seatType){
       if(!asgn[existing.id])asgn[existing.id]={};
-      asgn[existing.id].boat=curBoat;
-      asgn[existing.id].seat=String(dragFrom.seat);
-    }else{
-      asgn[existing.id]={boat:'',seat:''};
-    }
+      asgn[existing.id].boat=curBoat;asgn[existing.id].seat=String(dragFrom.seat);asgn[existing.id].seatType=seatType;
+    }else{asgn[existing.id]={boat:'',seat:'',seatType:''};}
   }
   if(!asgn[dragId])asgn[dragId]={};
-  asgn[dragId].boat=curBoat;
-  asgn[dragId].seat=String(targetSeat);
+  asgn[dragId].boat=curBoat;asgn[dragId].seat=String(targetSeat);asgn[dragId].seatType=seatType;
   dragId=null;dragFrom=null;
   localSave();
   setTimeout(()=>{renderStats();renderList();renderBoat();},50);
@@ -707,26 +783,28 @@ function onSeatDrop(e,targetSeat){
 function onUboxDrop(e){
   e.preventDefault();e.currentTarget.classList.remove('drag-over');
   if(!dragId||!dragFrom||dragFrom.type!=='seat')return;
-  asgn[dragId]={boat:'',seat:''};
+  asgn[dragId]={boat:'',seat:'',seatType:''};
   dragId=null;dragFrom=null;
   localSave();
   setTimeout(()=>{renderStats();renderList();renderBoat();showN('割当を解除しました','info');},50);
 }
 function unassign(id){
   if(!asgn[id])return;
-  asgn[id]={boat:'',seat:''};
+  asgn[id]={boat:'',seat:'',seatType:''};
   selectedId=null;
   localSave();renderStats();renderList();renderBoat();
   showN((ps.find(p=>p.id===id)||{name:'?'}).name+' の割当を解除しました','info');
 }
 
 function renderSummary(){
+  const fishers=ps.filter(p=>p.type!=='companion');
+  const compPersons=ps.filter(p=>p.type==='companion');
+  const comp=compPersons.length;
   const bc={},bs={};BOATS.forEach(b=>{bc[b]=0;bs[b]=[]});
-  ps.forEach(p=>{const a=ga(p.id);if(a.boat){bc[a.boat]++;if(a.seat)bs[a.boat].push(+a.seat)}});
-  const tot=ps.length,asgnd=ps.filter(p=>ga(p.id).boat).length;
+  fishers.forEach(p=>{const a=ga(p.id);if(a.boat){bc[a.boat]++;if(a.seat)bs[a.boat].push(+a.seat)}});
+  const tot=fishers.length,asgnd=fishers.filter(p=>ga(p.id).boat).length;
   const ren=ps.filter(p=>p.rental&&!p.rental.includes('無し')).length;
   const ts=ps.filter(p=>p.tshirt&&!p.tshirt.includes('しない')).length;
-  const comp=ps.filter(p=>p.compType&&p.compType!=='本人のみ').length;
   document.getElementById('summaryContent').innerHTML=`
     <div class="overview">
       <div class="ov-card"><div class="ov-num">${tot}</div><div class="ov-label">参加者合計</div></div>
@@ -737,15 +815,21 @@ function renderSummary(){
       <div class="ov-card"><div class="ov-num">${ts}</div><div class="ov-label">Tシャツ</div></div>
     </div>
     <div class="sgrid2">${BOATS.map(b=>{
-      const c=BC[b],cnt=bc[b],pct=Math.round(cnt/CAP*100),rem=Math.max(0,CAP-cnt);
-      const seats=bs[b].sort((a,z)=>a-z);
+      const col=BC[b],cfg=BOAT_CFG[b];
+      const fisherCnt=ps.filter(p=>p.type!=='companion'&&ga(p.id).boat===b).length;
+      const compCnt=ps.filter(p=>p.type==='companion'&&ga(p.id).boat===b).length;
+      const pct=Math.round(fisherCnt/cfg.seats*100);
+      const rem=Math.max(0,cfg.seats-fisherCnt);
+      const remC=Math.max(0,cfg.compSeats-compCnt);
+      const seats=ps.filter(p=>p.type!=='companion'&&ga(p.id).boat===b&&ga(p.id).seat).map(p=>+ga(p.id).seat).sort((a,z)=>a-z);
       return`<div class="scard2">
-        <div class="scard2-hdr" style="background:${c.bg};color:${c.tx}">${b}<span style="font-size:13px;font-weight:400;opacity:0.8">${cnt}/${CAP}名</span></div>
+        <div class="scard2-hdr" style="background:${col.bg};color:${col.tx}">${b}<span style="font-size:12px;font-weight:400;opacity:0.8">${fisherCnt}/${cfg.seats}${cfg.compSeats>0?' +付添'+compCnt+'/'+cfg.compSeats:''}</span></div>
         <div class="scard2-body">
-          <div class="srow"><span style="color:var(--txt2)">割当済</span><span style="font-weight:600">${cnt}名</span></div>
-          <div class="srow"><span style="color:var(--txt2)">残席（目安）</span><span style="font-weight:600;${rem<=3?'color:var(--err-tx)':''}">${rem}席</span></div>
+          <div class="srow"><span style="color:var(--txt2)">釣座割当</span><span style="font-weight:600">${fisherCnt}/${cfg.seats}名</span></div>
+          ${cfg.compSeats>0?`<div class="srow"><span style="color:var(--txt2)">付添席割当</span><span style="font-weight:600">${compCnt}/${cfg.compSeats}名</span></div>`:''}
+          <div class="srow"><span style="color:var(--txt2)">残席</span><span style="font-weight:600;${rem<=3?'color:var(--err-tx)':''}">${rem}席${cfg.compSeats>0&&remC>0?' +付添'+remC:''}${cfg.compSeats>0&&remC===0?' <span style="color:var(--err-tx)">付添満</span>':''}</span></div>
           <div class="srow"><span style="color:var(--txt2)">割当釣座</span><span style="font-size:11px;color:var(--txt2)">${seats.length?seats.slice(0,10).join(', ')+(seats.length>10?'…':''):'-'}</span></div>
-          <div class="bbar-bg"><div class="bbar-fill" style="width:${Math.min(100,pct)}%;background:${c.dot}"></div></div>
+          <div class="bbar-bg"><div class="bbar-fill" style="width:${Math.min(100,pct)}%;background:${col.dot}"></div></div>
           <div style="font-size:11px;color:var(--txt2);margin-top:5px">${pct}% 使用中</div>
         </div>
       </div>`;
@@ -762,8 +846,8 @@ function showN(msg,type='info'){
 
 function doExport(){
   if(!ps.length){showN('データがありません','error');return}
-  const rows=[['名前','電話番号','船番号','釣座番号','付添者名','同船希望','レンタル','Tシャツ・サイズ','備考']];
-  ps.forEach(p=>{const a=ga(p.id);rows.push([p.name,p.phone,a.boat||'',a.seat||'',p.compName,p.pref,p.rental,(p.tshirt||'')+(p.tsize?' '+p.tsize:''),p.notes])});
+  const rows=[['名前','種別','電話番号','船番号','釣座種別','釣座番号','同船希望','レンタル','Tシャツ・サイズ','備考']];
+  ps.forEach(p=>{const a=ga(p.id);rows.push([p.name,p.type==='companion'?'付添':'釣り',p.phone,a.boat||'',a.seatType==='companion'?'付添席':'釣座',a.seat||'',p.pref,p.rental,(p.tshirt||'')+(p.tsize?' '+p.tsize:''),p.notes])});
   const csv=rows.map(r=>r.map(v=>`"${(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
   const a=document.createElement('a');
   const d=new Date();
