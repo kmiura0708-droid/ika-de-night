@@ -47,11 +47,12 @@ button:disabled{opacity:0.4;cursor:not-allowed}
 .btn-sync:hover{opacity:0.85;background:var(--pur-bg)}
 .btn-danger{color:var(--err-tx);border-color:var(--err-br)}
 .btn-danger:hover{background:var(--err-bg)}
+.btn-warn{color:var(--warn-tx);border-color:var(--warn-br)}
+.btn-warn:hover{background:var(--warn-bg)}
 .notif{display:none;padding:9px 14px;border-radius:var(--radius);font-size:13px;margin-bottom:12px;border:0.5px solid}
 .notif.info{background:var(--info-bg);color:var(--info-tx);border-color:var(--info-br)}
 .notif.success{background:var(--suc-bg);color:var(--suc-tx);border-color:var(--suc-br)}
 .notif.error{background:var(--err-bg);color:var(--err-tx);border-color:var(--err-br)}
-.notif.warning{background:var(--warn-bg);color:var(--warn-tx);border-color:var(--warn-br)}
 .notif.warning{background:var(--warn-bg);color:var(--warn-tx);border-color:var(--warn-br)}
 
 /* GitHub設定パネル */
@@ -129,6 +130,10 @@ input.sin{width:50px;padding:5px 7px;border:0.5px solid var(--bdr2);border-radiu
 .spinner{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:4px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* ボタン説明ツールチップ */
+.btn-group{display:flex;flex-direction:column;gap:3px;align-items:flex-end}
+.btn-label{font-size:10px;color:var(--txt3);text-align:center}
+
 /* ===== ドラッグ&ドロップ ===== */
 .scard{cursor:default;position:relative;transition:transform 0.1s,box-shadow 0.1s}
 .scard.occupied{cursor:grab}
@@ -156,7 +161,15 @@ input.sin{width:50px;padding:5px 7px;border:0.5px solid var(--bdr2);border-radiu
       <input type="file" id="csvIn" accept=".csv" style="display:none">
       <button class="btn-imp" onclick="document.getElementById('csvIn').click()">📂 CSV読み込み</button>
       <button class="btn-exp" onclick="doExport()">💾 CSV書き出し</button>
-      <button class="btn-danger" id="clrBtn" onclick="doClear()">🗑 削除</button>
+      <!-- 削除ボタン群：ラベルで用途を明示 -->
+      <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+        <button class="btn-danger" id="clrBtn" onclick="doClear()" title="この端末のブラウザ上のデータのみ削除します。GitHubのデータは残ります。">🗑 端末のみ削除</button>
+        <button class="btn-warn" id="fullResetBtn" onclick="doFullReset()" title="この端末のデータとGitHub上のデータを両方削除します。">⚠️ 全てリセット（GitHub含む）</button>
+        <div style="font-size:10px;color:var(--txt3);text-align:right;line-height:1.4">
+          端末のみ削除：ブラウザのデータを消去（GitHubは残る）<br>
+          全てリセット：GitHub上のデータも含めて完全消去
+        </div>
+      </div>
     </div>
   </div>
 
@@ -264,8 +277,8 @@ const BOAT_CFG={
   '高栄丸':  {seats:12, compSeats:2},
 };
 const LSK='ikadenightv2', GHSK='ikaghconfig';
-let ps=[], asgn={}, compAsgn={}, curTab='list', curBoat='春定丸', clrN=0;
-let ghSHA=''; // GitHubファイルの現在のSHA（更新時に必要）
+let ps=[], asgn={}, compAsgn={}, curTab='list', curBoat='春定丸', clrN=0, fullResetN=0;
+let ghSHA='';
 let lastSyncTime='';
 
 // ============================
@@ -329,7 +342,7 @@ function setGHStatus(msg,type){
   el.innerHTML=type==='checking'?`<span class="spinner"></span>${msg}`:msg;
 }
 function setBtnsDisabled(v){
-  ['pullBtn','pushBtn'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=v});
+  ['pullBtn','pushBtn','clrBtn','fullResetBtn'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=v});
 }
 
 async function ghPull(){
@@ -371,7 +384,6 @@ async function ghPush(){
   setGHStatus('保存中...','checking');
   setBtnsDisabled(true);
   try{
-    // SHAが未取得の場合は先にGETして確認
     if(!ghSHA){
       const chk=await fetch(`https://api.github.com/repos/${c.repo}/contents/${c.path}`,{
         headers:{Authorization:`token ${c.token}`,Accept:'application/vnd.github.v3+json'}
@@ -429,11 +441,9 @@ function mapP(hs,r){
     tsize:gf(hs,r,'サイズを選択してください'),
     notes:gf(hs,r,'ご質問・ご要望・その他（自由記述）')};
 }
-// 付添者名文字列をパースして個人リストに変換
 function parseCompanions(mainPerson){
   const n=mainPerson.compName||'';
   if(!n||n==='nan')return[];
-  // 区切り: 読点・カンマ・全角スペース / ただし「池田 真人、池田 歩叶」の半角スペースはファーストネームの区切り
   const parts=n.split(/[\u3001,\uff0c\u3000\n]+/).map(s=>s.trim()).filter(s=>s&&s!=='nan');
   return parts.map((name,i)=>({
     id: mainPerson.id+'_comp_'+i,
@@ -451,14 +461,12 @@ async function importCSV(file){
   if(rows.length<2){showN('CSVの形式が正しくありません','error');return}
   const hs=rows[0];
   const mainPs=rows.slice(1).map(r=>mapP(hs,r)).filter(p=>p.name);
-  // 付添者を展開
   const ex=new Map(ps.map(p=>[p.id,p]));
   let added=0,updated=0;
   mainPs.forEach(p=>{
     if(!ex.has(p.id)){ps.push(p);added++}
     else{Object.assign(ex.get(p.id),p);updated++;}
   });
-  // 不要になった付添者（以前のバージョンで追加されたもの）を削除
   ps=ps.filter(p=>p.type!=='companion');
   localSave();render();
   showN(`読み込み完了：${mainPs.length}名（新規 ${added}件・更新 ${updated}件）—「GitHubへ保存」で共有できます`,'success');
@@ -541,12 +549,10 @@ const isTouch = () => ('ontouchstart' in window || navigator.maxTouchPoints > 0)
 let dragId=null, dragFrom=null;
 let selectedId=null;
 
-// 釣座グリッドを描画
 function renderSeatGrid(seats, sm, col, seatType){
   let sg='';
   for(let s=1;s<=seats;s++){
     if(seatType==='companion'){
-      // 付添席：テキスト入力方式
       const boat=curBoat;
       const val=(compAsgn[boat]&&compAsgn[boat][s])||'';
       const hasPerson=val.trim()!=='';
@@ -560,7 +566,6 @@ function renderSeatGrid(seats, sm, col, seatType){
         ${hasPerson?`<button onclick="setCompSeat('${boat}',${s},'');this.closest('.scard').querySelector('input').value=''" style="position:absolute;top:5px;right:6px;width:18px;height:18px;border-radius:50%;background:var(--err-bg);border:0.5px solid var(--err-br);color:var(--err-tx);font-size:11px;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center">✕</button>`:''}
       </div>`;
     }else{
-      // 釣座：従来のドラッグ&ドロップ方式
       const p=sm[s];
       const isSel=p&&p.id===selectedId;
       if(p){
@@ -634,10 +639,8 @@ function renderBoat(){
     else smF[s]=p;
   });
 
-  // 釣座グリッド
   const fishGrid=renderSeatGrid(cfg.seats,smF,col,'fishing');
 
-  // 付添席グリッド（テキスト入力方式）
   let compSection='';
   if(cfg.compSeats>0){
     const compGrid=renderSeatGrid(cfg.compSeats,{},col,'companion');
@@ -648,7 +651,6 @@ function renderBoat(){
     </div>`;
   }
 
-  // 未割当リスト（釣り人のみ）
   const unassigned=ps.filter(p=>!ga(p.id).boat);
   let touchHint=isTouch()?'<div style="font-size:11px;color:var(--txt2);margin-bottom:8px">名前をタップ→釣座をタップで配置 ／ ✕ で解除</div>':'';
   let ubox;
@@ -697,7 +699,6 @@ function onSeatClick(e,seat,pid,seatType){
   if(selectedId===pid){selectedId=null;renderBoat();return;}
   const selA=ga(selectedId);
   const targetA=ga(pid);
-  // 入れ替え
   if(!asgn[pid])asgn[pid]={};
   if(selA.boat){asgn[pid].boat=selA.boat;asgn[pid].seat=selA.seat;asgn[pid].seatType=selA.seatType||'fishing';}
   else{asgn[pid]={boat:'',seat:'',seatType:'fishing'};}
@@ -711,7 +712,6 @@ function onEmptySeatClick(e,seat,seatType){
   if(!selectedId)return;
   const p=ps.find(q=>q.id===selectedId);
   if(!p)return;
-  // 型チェック：付添席には付添者、釣座には釣り人
   if(seatType==='companion'&&p.type!=='companion'){showN('付添席には付添者のみ割当できます','warning');return;}
   if(seatType==='fishing'&&p.type==='companion'){showN('釣座には釣り人のみ割当できます','warning');return;}
   if(!asgn[selectedId])asgn[selectedId]={};
@@ -760,7 +760,6 @@ function onSeatDrop(e,targetSeat,seatType){
   if(!dragPerson)return;
   if(seatType==='companion'&&dragPerson.type!=='companion'){showN('付添席には付添者のみ割当できます','warning');dragId=null;dragFrom=null;return;}
   if(seatType==='fishing'&&dragPerson.type==='companion'){showN('釣座には釣り人のみ割当できます','warning');dragId=null;dragFrom=null;return;}
-  // 移動先に誰かいたら入れ替え
   const smTarget={};
   ps.forEach(p=>{const a=ga(p.id);if(a.boat===curBoat&&a.seatType===seatType){const s=parseInt(a.seat);if(s>0)smTarget[s]=p;}});
   const existing=smTarget[targetSeat];
@@ -842,7 +841,6 @@ function doExport(){
   if(!ps.length){showN('データがありません','error');return}
   const rows=[['名前','電話番号','船番号','釣座番号','同船希望','レンタル','Tシャツ・サイズ','備考']];
   ps.forEach(p=>{const a=ga(p.id);rows.push([p.name,p.phone,a.boat||'',a.seat||'',p.pref,p.rental,(p.tshirt||'')+(p.tsize?' '+p.tsize:''),p.notes])});
-  // 付添席を追加
   BOATS.forEach(b=>{
     if(!compAsgn[b])return;
     Object.entries(compAsgn[b]).forEach(([seat,name])=>{
@@ -857,19 +855,97 @@ function doExport(){
   a.click();showN('CSVを書き出しました','success');
 }
 
+// ============================
+// 端末のみ削除（旧：削除ボタン）
+// ============================
 function doClear(){
   if(clrN===0){
     clrN=1;
-    document.getElementById('clrBtn').textContent='⚠ もう一度押すと削除';
-    document.getElementById('clrBtn').style.background='var(--err-bg)';
-    setTimeout(()=>{clrN=0;document.getElementById('clrBtn').textContent='🗑 削除';document.getElementById('clrBtn').style.background=''},4000);
+    const btn=document.getElementById('clrBtn');
+    btn.textContent='⚠ もう一度押すと削除（端末のみ）';
+    btn.style.background='var(--err-bg)';
+    setTimeout(()=>{clrN=0;btn.textContent='🗑 端末のみ削除';btn.style.background=''},4000);
     return;
   }
   clrN=0;ps=[];asgn={};compAsgn={};ghSHA='';
   try{localStorage.removeItem(LSK)}catch{}
-  document.getElementById('clrBtn').textContent='🗑 削除';
-  document.getElementById('clrBtn').style.background='';
-  render();showN('ローカルデータを削除しました（GitHubのデータは残っています）','info');
+  const btn=document.getElementById('clrBtn');
+  btn.textContent='🗑 端末のみ削除';
+  btn.style.background='';
+  render();showN('この端末のデータを削除しました（GitHubのデータは残っています）','info');
+}
+
+// ============================
+// 全てリセット（GitHub含む）
+// ============================
+async function doFullReset(){
+  const c=loadGHConfig();
+  if(fullResetN===0){
+    fullResetN=1;
+    const btn=document.getElementById('fullResetBtn');
+    btn.textContent='⚠ もう一度押すと全消去（取り消し不可）';
+    btn.style.background='var(--warn-bg)';
+    btn.style.color='var(--warn-tx)';
+    setTimeout(()=>{
+      fullResetN=0;
+      btn.textContent='⚠️ 全てリセット（GitHub含む）';
+      btn.style.background='';btn.style.color='';
+    },5000);
+    return;
+  }
+  fullResetN=0;
+  const btn=document.getElementById('fullResetBtn');
+  btn.textContent='⚠️ 全てリセット（GitHub含む）';
+  btn.style.background='';btn.style.color='';
+
+  // まずローカルをリセット
+  ps=[];asgn={};compAsgn={};ghSHA='';
+  try{localStorage.removeItem(LSK)}catch{}
+  render();
+
+  // GitHub設定がなければローカルのみ削除で終了
+  if(!c||!c.repo||!c.token){
+    showN('ローカルデータを削除しました（GitHub未設定のためGitHubは対象外）','info');
+    return;
+  }
+
+  // GitHub上のファイルを空データで上書き
+  setBtnsDisabled(true);
+  showN('GitHubのデータをリセット中...','info');
+  try{
+    // 現在のSHAを取得
+    let sha='';
+    const chk=await fetch(`https://api.github.com/repos/${c.repo}/contents/${c.path}`,{
+      headers:{Authorization:`token ${c.token}`,Accept:'application/vnd.github.v3+json'}
+    });
+    if(chk.ok){const j=await chk.json();sha=j.sha;}
+    else if(chk.status!==404){const e=await chk.json();throw new Error(e.message||chk.status)}
+
+    if(!sha){
+      // ファイルが存在しない場合はGitHub側はすでに空なので完了
+      showN('全てリセット完了（GitHubにデータはありませんでした）','success');
+      setBtnsDisabled(false);return;
+    }
+
+    // 空データで上書き
+    const emptyPayload={ps:[],asgn:{},compAsgn:{},savedAt:new Date().toISOString(),savedBy:'IKAdeNight管理ツール（全リセット）'};
+    const body={
+      message:`IKA de Night 全リセット ${new Date().toLocaleString('ja-JP')}`,
+      content:btoa(unescape(encodeURIComponent(JSON.stringify(emptyPayload,null,2)))),
+      sha:sha
+    };
+    const res=await fetch(`https://api.github.com/repos/${c.repo}/contents/${c.path}`,{
+      method:'PUT',
+      headers:{Authorization:`token ${c.token}`,Accept:'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+    if(!res.ok){const e=await res.json();throw new Error(e.message||res.status)}
+    const j=await res.json();
+    ghSHA=j.content.sha;
+    showN('全てリセット完了（この端末 ＋ GitHub両方のデータを削除しました）','success');
+  }catch(e){
+    showN('GitHubのリセットに失敗しました：'+e.message+'（端末のデータは削除済みです）','error');
+  }finally{setBtnsDisabled(false)}
 }
 
 document.getElementById('csvIn').addEventListener('change',e=>{if(e.target.files[0])importCSV(e.target.files[0]);e.target.value=''});
@@ -882,7 +958,6 @@ document.getElementById('csvIn').addEventListener('change',e=>{if(e.target.files
     document.getElementById('ghPath').value=c.path||'data/assignments.json';
     updateSyncBar();
   }else{
-    // 未設定の場合はページ下部の設定パネルを自動展開
     document.getElementById('ghPanel').style.display='block';
   }
   const state=localLoad();
