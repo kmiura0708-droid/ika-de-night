@@ -90,12 +90,17 @@ input[type=text].srch{flex:1;min-width:160px;padding:7px 11px;border:0.5px solid
 input[type=text].srch:focus{border-color:var(--info-br)}
 select.fsel{padding:7px 11px;border:0.5px solid var(--bdr2);border-radius:var(--radius);font-family:inherit;font-size:13px;background:var(--bg);color:var(--txt);cursor:pointer;outline:none}
 .twrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:700px}
+table{width:100%;border-collapse:collapse;min-width:760px}
 th{font-size:11px;font-weight:600;color:var(--txt2);padding:9px 11px;text-align:left;border-bottom:0.5px solid var(--bdr);background:var(--bg2);letter-spacing:0.3px;white-space:nowrap}
 td{font-size:13px;padding:8px 11px;border-bottom:0.5px solid var(--bdr);vertical-align:middle}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:var(--bg2)}
 select.bsel{padding:5px 7px;border:0.5px solid var(--bdr2);border-radius:6px;font-family:inherit;font-size:12px;background:var(--bg);color:var(--txt);cursor:pointer;max-width:92px;outline:none}
+/* 入金ステータスセレクト */
+select.psel{padding:4px 6px;border:0.5px solid var(--bdr2);border-radius:6px;font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;outline:none;min-width:80px}
+select.psel.none{background:var(--bg2);color:var(--txt2);border-color:var(--bdr2)}
+select.psel.sent{background:var(--info-bg);color:var(--info-tx);border-color:var(--info-br)}
+select.psel.paid{background:var(--suc-bg);color:var(--suc-tx);border-color:var(--suc-br)}
 input.sin{width:50px;padding:5px 7px;border:0.5px solid var(--bdr2);border-radius:6px;font-family:inherit;font-size:12px;text-align:center;background:var(--bg);color:var(--txt);outline:none}
 .chip{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;margin-bottom:4px}
 .muted{color:var(--txt2);font-size:11px}
@@ -130,10 +135,6 @@ input.sin{width:50px;padding:5px 7px;border:0.5px solid var(--bdr2);border-radiu
 .spinner{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:4px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ボタン説明ツールチップ */
-.btn-group{display:flex;flex-direction:column;gap:3px;align-items:flex-end}
-.btn-label{font-size:10px;color:var(--txt3);text-align:center}
-
 /* ===== ドラッグ&ドロップ ===== */
 .scard{cursor:default;position:relative;transition:transform 0.1s,box-shadow 0.1s}
 .scard.occupied{cursor:grab}
@@ -145,6 +146,12 @@ input.sin{width:50px;padding:5px 7px;border:0.5px solid var(--bdr2);border-radiu
 .ubox.drag-over{outline:2px dashed var(--bdr2);background:var(--bg3)!important}
 .del-btn{position:absolute;top:5px;right:6px;width:18px;height:18px;border-radius:50%;background:var(--err-bg);border:0.5px solid var(--err-br);color:var(--err-tx);font-size:11px;line-height:18px;text-align:center;cursor:pointer;opacity:0;transition:opacity 0.15s;padding:0;font-family:inherit;display:flex;align-items:center;justify-content:center}
 .scard.occupied:hover .del-btn{opacity:1}
+
+/* 入金サマリーセクション */
+.pay-summary{margin-top:16px;padding:12px 16px;background:var(--bg2);border-radius:var(--radius);border:0.5px solid var(--bdr)}
+.pay-summary h3{font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:10px;letter-spacing:0.3px}
+.pay-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:4px 0;border-bottom:0.5px solid var(--bdr)}
+.pay-row:last-child{border-bottom:none}
 </style>
 </head>
 <body>
@@ -161,7 +168,6 @@ input.sin{width:50px;padding:5px 7px;border:0.5px solid var(--bdr2);border-radiu
       <input type="file" id="csvIn" accept=".csv" style="display:none">
       <button class="btn-imp" onclick="document.getElementById('csvIn').click()">📂 CSV読み込み</button>
       <button class="btn-exp" onclick="doExport()">💾 CSV書き出し</button>
-      <!-- 削除ボタン群：ラベルで用途を明示 -->
       <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
         <button class="btn-danger" id="clrBtn" onclick="doClear()" title="この端末のブラウザ上のデータのみ削除します。GitHubのデータは残ります。">🗑 端末のみ削除</button>
         <button class="btn-warn" id="fullResetBtn" onclick="doFullReset()" title="この端末のデータとGitHub上のデータを両方削除します。">⚠️ 全てリセット（GitHub含む）</button>
@@ -173,7 +179,7 @@ input.sin{width:50px;padding:5px 7px;border:0.5px solid var(--bdr2);border-radiu
     </div>
   </div>
 
-  <!-- 同期バー（設定済み時のみ表示） -->
+  <!-- 同期バー -->
   <div class="sync-bar" id="syncBar" style="display:none">
     <div class="sync-info" id="syncInfo">未設定</div>
     <button class="btn-sync" onclick="ghPull()" id="pullBtn">⬇ 最新を取得</button>
@@ -202,11 +208,18 @@ input.sin{width:50px;padding:5px 7px;border:0.5px solid var(--bdr2);border-radiu
           <option value="竹宝丸">竹宝丸</option>
           <option value="高栄丸">高栄丸</option>
         </select>
+        <!-- 入金ステータスフィルター -->
+        <select class="fsel" id="pfil" onchange="renderList()">
+          <option value="">入金ステータス：全員</option>
+          <option value="__pay_none">未対応のみ</option>
+          <option value="sent">送信済みのみ</option>
+          <option value="paid">入金済みのみ</option>
+        </select>
       </div>
       <div class="twrap">
         <table>
           <thead><tr>
-            <th>#</th><th>名前</th><th>付添者</th><th>同船希望</th><th>レンタル</th><th>Tシャツ</th><th>船番号 <span style="font-weight:400;font-size:10px;opacity:0.6">（船別ビューで編集）</span></th><th>釣座</th>
+            <th>#</th><th>名前</th><th>付添者</th><th>同船希望</th><th>レンタル</th><th>Tシャツ</th><th>船番号 <span style="font-weight:400;font-size:10px;opacity:0.6">（船別ビューで編集）</span></th><th>釣座</th><th>入金ステータス</th>
           </tr></thead>
           <tbody id="listBody"></tbody>
         </table>
@@ -228,7 +241,7 @@ input.sin{width:50px;padding:5px 7px;border:0.5px solid var(--bdr2);border-radiu
     <a href="#" onclick="toggleGHPanel();return false;" style="color:var(--txt3);text-decoration:none;" id="ghConfigLink">⚙ GitHub連携設定</a>
   </div>
 
-  <!-- GitHub設定パネル（フッター下・通常は非表示） -->
+  <!-- GitHub設定パネル -->
   <div class="gh-panel" id="ghPanel" style="display:none;margin-top:14px">
     <h2>⚙️ GitHub連携設定</h2>
     <div class="gh-grid">
@@ -276,6 +289,14 @@ const BOAT_CFG={
   '竹宝丸':  {seats:22, compSeats:0},
   '高栄丸':  {seats:12, compSeats:2},
 };
+
+// 入金ステータス定義
+const PAY_STATUS={
+  '':    {label:'未対応',  cls:'none'},
+  'sent':{label:'送信済み', cls:'sent'},
+  'paid':{label:'入金済み', cls:'paid'},
+};
+
 const LSK='ikadenightv2', GHSK='ikaghconfig';
 let ps=[], asgn={}, compAsgn={}, curTab='list', curBoat='春定丸', clrN=0, fullResetN=0;
 let ghSHA='';
@@ -441,20 +462,6 @@ function mapP(hs,r){
     tsize:gf(hs,r,'サイズを選択してください'),
     notes:gf(hs,r,'ご質問・ご要望・その他（自由記述）')};
 }
-function parseCompanions(mainPerson){
-  const n=mainPerson.compName||'';
-  if(!n||n==='nan')return[];
-  const parts=n.split(/[\u3001,\uff0c\u3000\n]+/).map(s=>s.trim()).filter(s=>s&&s!=='nan');
-  return parts.map((name,i)=>({
-    id: mainPerson.id+'_comp_'+i,
-    name: name,
-    type: 'companion',
-    parentId: mainPerson.id,
-    parentName: mainPerson.name,
-    phone:'', compType:'', compCnt:'', compName:'',
-    rental:'', pref:'', tshirt:'', tsize:'', notes:''
-  }));
-}
 async function importCSV(file){
   const text=await file.text();
   const rows=csvParse(text);
@@ -465,7 +472,14 @@ async function importCSV(file){
   let added=0,updated=0;
   mainPs.forEach(p=>{
     if(!ex.has(p.id)){ps.push(p);added++}
-    else{Object.assign(ex.get(p.id),p);updated++;}
+    else{
+      // 入金ステータスは上書きしない（既存の管理データを保持する）
+      const existing=ex.get(p.id);
+      const payStatus=existing.payStatus;
+      Object.assign(existing,p);
+      if(payStatus!==undefined)existing.payStatus=payStatus;
+      updated++;
+    }
   });
   ps=ps.filter(p=>p.type!=='companion');
   localSave();render();
@@ -476,8 +490,31 @@ async function importCSV(file){
 // データ操作
 // ============================
 function ga(id){return asgn[id]||{boat:'',seat:''}}
-function setBoat(id,b){if(!asgn[id])asgn[id]={};asgn[id].boat=b;localSave();renderStats();renderList();if(curTab==='boat')renderBoat();if(curTab==='summary')renderSummary()}
+
+function setBoat(id,b){
+  if(!asgn[id])asgn[id]={};
+  asgn[id].boat=b;
+  localSave();renderStats();renderList();
+  if(curTab==='boat')renderBoat();
+  if(curTab==='summary')renderSummary();
+}
 function setSeat(id,s){if(!asgn[id])asgn[id]={};asgn[id].seat=s;localSave();if(curTab==='boat')renderBoat()}
+
+// ============================
+// 入金ステータス操作
+// ============================
+function paySelId(id){return 'psel_'+id.replace(/[^a-zA-Z0-9_-]/g,'_')}
+function setPayStatus(id, status){
+  const p=ps.find(q=>q.id===id);
+  if(!p)return;
+  p.payStatus=status;
+  localSave();
+  renderStats();
+  if(curTab==='summary')renderSummary();
+  // ドロップダウン自体のスタイルを即時更新
+  const sel=document.getElementById(paySelId(id));
+  if(sel){sel.className='psel '+(PAY_STATUS[status]||PAY_STATUS['']).cls;}
+}
 
 // ============================
 // タブ
@@ -500,10 +537,20 @@ function renderStats(){
   const totalComp=Object.values(compAsgn).reduce((s,b)=>s+Object.values(b).filter(v=>v&&v.trim()!=='').length,0);
   const bc={};BOATS.forEach(b=>bc[b]=0);
   ps.forEach(p=>{const b=ga(p.id).boat;if(b)bc[b]++});
+
+  // 入金ステータス集計
+  const payNone=ps.filter(p=>!p.payStatus||p.payStatus==='').length;
+  const paySent=ps.filter(p=>p.payStatus==='sent').length;
+  const payPaid=ps.filter(p=>p.payStatus==='paid').length;
+
   let h=`<span class="stat">👥 <b>${tot}</b>名</span>`;
   if(totalComp>0)h+=`<span class="stat">👀 付添 <b>${totalComp}</b>名</span>`;
   h+=`<span class="stat" style="color:var(--suc-tx)">✅ 割当済 <b>${asgnd}</b>名</span>`;
   h+=`<span class="stat" style="color:var(--warn-tx)">⏳ 未割当 <b>${tot-asgnd}</b>名</span>`;
+  h+=`<span style="width:1px;background:var(--bdr);align-self:stretch;margin:0 4px"></span>`;
+  h+=`<span class="stat" style="color:var(--suc-tx)">💴 入金済 <b>${payPaid}</b>名</span>`;
+  h+=`<span class="stat" style="color:var(--info-tx)">📧 送信済 <b>${paySent}</b>名</span>`;
+  h+=`<span class="stat" style="color:var(--txt2)">🕐 未対応 <b>${payNone}</b>名</span>`;
   BOATS.forEach(b=>{if(bc[b]>0)h+=`<span class="stat"><span class="dot" style="background:${BC[b].dot}"></span>${b}：<b>${bc[b]}</b>名</span>`});
   document.getElementById('statsBar').innerHTML=h;
 }
@@ -512,16 +559,24 @@ function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace
 function renderList(){
   const q=(document.getElementById('srchIn')?.value||'').toLowerCase();
   const bf=document.getElementById('bfil')?.value||'';
+  const pf=document.getElementById('pfil')?.value||'';
+
   let fl=ps.filter(p=>{
     if(q&&!p.name.toLowerCase().includes(q)&&!(p.pref||'').toLowerCase().includes(q)&&!(p.parentName||'').toLowerCase().includes(q))return false;
     const b=ga(p.id).boat;
     if(bf==='__none'&&b)return false;
     if(bf==='__comp'&&p.type!=='companion')return false;
     if(bf&&bf!=='__none'&&bf!=='__comp'&&b!==bf)return false;
+    // 入金フィルター
+    const ps_=p.payStatus||'';
+    if(pf==='__pay_none'&&ps_!=='')return false;
+    if(pf==='sent'&&ps_!=='sent')return false;
+    if(pf==='paid'&&ps_!=='paid')return false;
     return true;
   });
+
   if(!fl.length){
-    document.getElementById('listBody').innerHTML=`<tr><td colspan="8" class="empty-msg">${ps.length===0?'「📂 CSV読み込み」からGoogleフォームのCSVを選択するか、<br>「⬇ 最新を取得」でGitHubからデータを読み込んでください':'該当する参加者がいません'}</td></tr>`;
+    document.getElementById('listBody').innerHTML=`<tr><td colspan="9" class="empty-msg">${ps.length===0?'「📂 CSV読み込み」からGoogleフォームのCSVを選択するか、<br>「⬇ 最新を取得」でGitHubからデータを読み込んでください':'該当する参加者がいません'}</td></tr>`;
     return;
   }
   document.getElementById('listBody').innerHTML=fl.map(p=>{
@@ -530,6 +585,16 @@ function renderList(){
     const hc=p.compType&&p.compType!=='本人のみ';
     const ren=p.rental&&!p.rental.includes('無し')?`<span style="color:var(--info-tx);font-size:11px;font-weight:600">あり</span>`:'<span class="muted">-</span>';
     const ts=p.tshirt&&!p.tshirt.includes('しない')?`<span style="font-size:11px;font-weight:600">${esc(p.tsize)||'購入'}</span>`:'<span class="muted">-</span>';
+
+    // 入金ステータスドロップダウン
+    const payVal=p.payStatus||'';
+    const payCls=(PAY_STATUS[payVal]||PAY_STATUS['']).cls;
+    const pid_esc=p.id.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const payOpts=Object.entries(PAY_STATUS).map(([v,d])=>
+      `<option value="${v}"${payVal===v?' selected':''}>${d.label}</option>`
+    ).join('');
+    const paySel=`<select id="${paySelId(p.id)}" class="psel ${payCls}" onchange="setPayStatus('${pid_esc}',this.value)">${payOpts}</select>`;
+
     return`<tr>
       <td class="muted">${idx}</td>
       <td><div style="font-weight:600">${esc(p.name)}</div>${p.notes?`<div class="muted" style="margin-top:2px">${esc(p.notes.slice(0,24))}${p.notes.length>24?'…':''}</div>`:''}</td>
@@ -538,6 +603,7 @@ function renderList(){
       <td>${ren}</td><td>${ts}</td>
       <td><span class="chip" style="${cs}">${a.boat||'未割当'}</span></td>
       <td style="text-align:center;color:var(--txt2);font-size:13px">${a.seat||'-'}</td>
+      <td>${paySel}</td>
     </tr>`;
   }).join('');
 }
@@ -576,6 +642,10 @@ function renderSeatGrid(seats, sm, col, seatType){
         })();
         const pid=p.id.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
         const selRing=isSel?`box-shadow:0 0 0 3px ${col.dot};`:'';
+        // 入金ステータスバッジ（船席カード内）
+        const payV=p.payStatus||'';
+        const payInfo=PAY_STATUS[payV]||PAY_STATUS[''];
+        const payBadge=payV?`<span style="font-size:10px;font-weight:600;opacity:0.85">${payInfo.label}</span>`:'';
         sg+=`<div class="scard occupied" data-seat="${s}" data-stype="fishing" draggable="true"
           ondragstart="onCardDragStart(event,${s},'${pid}','fishing')"
           ondragend="onDragEnd(event)"
@@ -588,6 +658,7 @@ function renderSeatGrid(seats, sm, col, seatType){
           <div class="snum" style="color:${col.tx}">釣座 ${s}</div>
           <div class="sname" style="color:${col.tx}">${esc(p.name)}</div>
           ${sub?`<div class="sdet" style="color:${col.tx};opacity:0.8">${esc(sub)}</div>`:''}
+          ${payBadge?`<div style="margin-top:4px;color:${col.tx}">${payBadge}</div>`:''}
         </div>`;
       }else{
         const canDrop=!!selectedId;
@@ -798,6 +869,12 @@ function renderSummary(){
   const comp=Object.values(compAsgn).reduce((s,b)=>s+Object.values(b).filter(v=>v&&v.trim()!=='').length,0);
   const ren=ps.filter(p=>p.rental&&!p.rental.includes('無し')).length;
   const ts=ps.filter(p=>p.tshirt&&!p.tshirt.includes('しない')).length;
+
+  // 入金集計
+  const payNone=ps.filter(p=>!p.payStatus||p.payStatus==='').length;
+  const paySent=ps.filter(p=>p.payStatus==='sent').length;
+  const payPaid=ps.filter(p=>p.payStatus==='paid').length;
+
   document.getElementById('summaryContent').innerHTML=`
     <div class="overview">
       <div class="ov-card"><div class="ov-num">${tot}</div><div class="ov-label">参加者合計</div></div>
@@ -807,7 +884,34 @@ function renderSummary(){
       <div class="ov-card"><div class="ov-num">${ren}</div><div class="ov-label">レンタル</div></div>
       <div class="ov-card"><div class="ov-num">${ts}</div><div class="ov-label">Tシャツ</div></div>
     </div>
-    <div class="sgrid2">${BOATS.map(b=>{
+
+    <!-- 入金ステータスサマリー -->
+    <div class="pay-summary">
+      <h3>💴 入金ステータス（${tot}名）</h3>
+      <div class="pay-row">
+        <span style="color:var(--txt2)">🕐 未対応</span>
+        <span style="font-weight:600;color:var(--txt2)">${payNone}名</span>
+      </div>
+      <div class="pay-row">
+        <span style="color:var(--info-tx)">📧 送信済み</span>
+        <span style="font-weight:600;color:var(--info-tx)">${paySent}名</span>
+      </div>
+      <div class="pay-row">
+        <span style="color:var(--suc-tx)">✅ 入金済み</span>
+        <span style="font-weight:600;color:var(--suc-tx)">${payPaid}名</span>
+      </div>
+      <div style="margin-top:10px">
+        <div class="bbar-bg" style="height:10px">
+          <div style="height:100%;display:flex;border-radius:3px;overflow:hidden">
+            <div style="width:${tot?Math.round(payPaid/tot*100):0}%;background:#639922;transition:width 0.4s" title="入金済み"></div>
+            <div style="width:${tot?Math.round(paySent/tot*100):0}%;background:#378add;transition:width 0.4s" title="送信済み"></div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--txt2);margin-top:4px">入金済み ${tot?Math.round(payPaid/tot*100):0}%　送信済み ${tot?Math.round(paySent/tot*100):0}%　未対応 ${tot?Math.round(payNone/tot*100):0}%</div>
+      </div>
+    </div>
+
+    <div class="sgrid2" style="margin-top:16px">${BOATS.map(b=>{
       const col=BC[b],cfg=BOAT_CFG[b];
       const fisherCnt=ps.filter(p=>ga(p.id).boat===b).length;
       const compCnt=compAsgn[b]?Object.values(compAsgn[b]).filter(v=>v&&v.trim()!=='').length:0;
@@ -839,12 +943,16 @@ function showN(msg,type='info'){
 
 function doExport(){
   if(!ps.length){showN('データがありません','error');return}
-  const rows=[['名前','電話番号','船番号','釣座番号','同船希望','レンタル','Tシャツ・サイズ','備考']];
-  ps.forEach(p=>{const a=ga(p.id);rows.push([p.name,p.phone,a.boat||'',a.seat||'',p.pref,p.rental,(p.tshirt||'')+(p.tsize?' '+p.tsize:''),p.notes])});
+  const rows=[['名前','電話番号','船番号','釣座番号','入金ステータス','同船希望','レンタル','Tシャツ・サイズ','備考']];
+  ps.forEach(p=>{
+    const a=ga(p.id);
+    const payLabel=(PAY_STATUS[p.payStatus||'']||PAY_STATUS['']).label;
+    rows.push([p.name,p.phone,a.boat||'',a.seat||'',payLabel,p.pref,p.rental,(p.tshirt||'')+(p.tsize?' '+p.tsize:''),p.notes]);
+  });
   BOATS.forEach(b=>{
     if(!compAsgn[b])return;
     Object.entries(compAsgn[b]).forEach(([seat,name])=>{
-      if(name&&name.trim())rows.push([name,'',b,'付添席'+seat,'','','','付添']);
+      if(name&&name.trim())rows.push([name,'',b,'付添席'+seat,'','','','','付添']);
     });
   });
   const csv=rows.map(r=>r.map(v=>`"${(v||'').replace(/"/g,'""')}"`).join(',')).join('\n');
@@ -856,7 +964,7 @@ function doExport(){
 }
 
 // ============================
-// 端末のみ削除（旧：削除ボタン）
+// 端末のみ削除
 // ============================
 function doClear(){
   if(clrN===0){
@@ -898,22 +1006,18 @@ async function doFullReset(){
   btn.textContent='⚠️ 全てリセット（GitHub含む）';
   btn.style.background='';btn.style.color='';
 
-  // まずローカルをリセット
   ps=[];asgn={};compAsgn={};ghSHA='';
   try{localStorage.removeItem(LSK)}catch{}
   render();
 
-  // GitHub設定がなければローカルのみ削除で終了
   if(!c||!c.repo||!c.token){
     showN('ローカルデータを削除しました（GitHub未設定のためGitHubは対象外）','info');
     return;
   }
 
-  // GitHub上のファイルを空データで上書き
   setBtnsDisabled(true);
   showN('GitHubのデータをリセット中...','info');
   try{
-    // 現在のSHAを取得
     let sha='';
     const chk=await fetch(`https://api.github.com/repos/${c.repo}/contents/${c.path}`,{
       headers:{Authorization:`token ${c.token}`,Accept:'application/vnd.github.v3+json'}
@@ -922,12 +1026,10 @@ async function doFullReset(){
     else if(chk.status!==404){const e=await chk.json();throw new Error(e.message||chk.status)}
 
     if(!sha){
-      // ファイルが存在しない場合はGitHub側はすでに空なので完了
       showN('全てリセット完了（GitHubにデータはありませんでした）','success');
       setBtnsDisabled(false);return;
     }
 
-    // 空データで上書き
     const emptyPayload={ps:[],asgn:{},compAsgn:{},savedAt:new Date().toISOString(),savedBy:'IKAdeNight管理ツール（全リセット）'};
     const body={
       message:`IKA de Night 全リセット ${new Date().toLocaleString('ja-JP')}`,
@@ -962,7 +1064,7 @@ document.getElementById('csvIn').addEventListener('change',e=>{if(e.target.files
   }
   const state=localLoad();
   if(state){ps=state.ps||[];asgn=state.asgn||{};render()}
-  else{document.getElementById('listBody').innerHTML=`<tr><td colspan="8" class="empty-msg">GitHub設定後に「⬇ 最新を取得」、または<br>「📂 CSV読み込み」でデータを読み込んでください</td></tr>`}
+  else{document.getElementById('listBody').innerHTML=`<tr><td colspan="9" class="empty-msg">GitHub設定後に「⬇ 最新を取得」、または<br>「📂 CSV読み込み」でデータを読み込んでください</td></tr>`}
 })();
 </script>
 </body>
