@@ -49,6 +49,12 @@ button:disabled{opacity:0.4;cursor:not-allowed}
 .btn-danger:hover{background:var(--err-bg)}
 .btn-warn{color:var(--warn-tx);border-color:var(--warn-br)}
 .btn-warn:hover{background:var(--warn-bg)}
+.btn-print{background:#f0f0ee;color:#2a2a28;border-color:#c8c8c5}
+.btn-print:hover{background:#e2e2e0}
+@media(prefers-color-scheme:dark){
+  .btn-print{background:#2a2a28;color:#d0d0ce;border-color:#484846}
+  .btn-print:hover{background:#333331}
+}
 .notif{display:none;padding:9px 14px;border-radius:var(--radius);font-size:13px;margin-bottom:12px;border:0.5px solid}
 .notif.info{background:var(--info-bg);color:var(--info-tx);border-color:var(--info-br)}
 .notif.success{background:var(--suc-bg);color:var(--suc-tx);border-color:var(--suc-br)}
@@ -95,13 +101,11 @@ th{font-size:11px;font-weight:600;color:var(--txt2);padding:9px 11px;text-align:
 td{font-size:13px;padding:8px 11px;border-bottom:0.5px solid var(--bdr);vertical-align:middle}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:var(--bg2)}
-select.bsel{padding:5px 7px;border:0.5px solid var(--bdr2);border-radius:6px;font-family:inherit;font-size:12px;background:var(--bg);color:var(--txt);cursor:pointer;max-width:92px;outline:none}
 /* 入金ステータスセレクト */
 select.psel{padding:4px 6px;border:0.5px solid var(--bdr2);border-radius:6px;font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;outline:none;min-width:80px}
 select.psel.none{background:var(--bg2);color:var(--txt2);border-color:var(--bdr2)}
 select.psel.sent{background:var(--info-bg);color:var(--info-tx);border-color:var(--info-br)}
 select.psel.paid{background:var(--suc-bg);color:var(--suc-tx);border-color:var(--suc-br)}
-input.sin{width:50px;padding:5px 7px;border:0.5px solid var(--bdr2);border-radius:6px;font-family:inherit;font-size:12px;text-align:center;background:var(--bg);color:var(--txt);outline:none}
 .chip{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;margin-bottom:4px}
 .muted{color:var(--txt2);font-size:11px}
 .empty-msg{text-align:center;padding:56px 20px;color:var(--txt2);font-size:13px;line-height:1.9}
@@ -152,6 +156,48 @@ input.sin{width:50px;padding:5px 7px;border:0.5px solid var(--bdr2);border-radiu
 .pay-summary h3{font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:10px;letter-spacing:0.3px}
 .pay-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:4px 0;border-bottom:0.5px solid var(--bdr)}
 .pay-row:last-child{border-bottom:none}
+
+/* ===== 印刷用スタイル ===== */
+#printRoster{display:none}
+
+@media print{
+  /* 通常UIをすべて非表示 */
+  #wrap{display:none!important}
+  #printRoster{display:block!important}
+
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{background:#fff;font-family:'Hiragino Kaku Gothic ProN','Hiragino Sans',Meiryo,sans-serif;font-size:11pt;color:#000;margin:0;padding:0}
+
+  .pr-page{padding:14mm 12mm 10mm;page-break-after:always}
+  .pr-page:last-child{page-break-after:avoid}
+
+  /* ページヘッダー */
+  .pr-hdr{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2.5pt solid #000;padding-bottom:4pt;margin-bottom:8pt}
+  .pr-title{font-size:16pt;font-weight:700;letter-spacing:-0.3pt}
+  .pr-subtitle{font-size:9pt;color:#444;margin-top:2pt}
+  .pr-meta{text-align:right;font-size:9pt;color:#444;line-height:1.6}
+  .pr-badge{display:inline-block;padding:2pt 7pt;border-radius:3pt;font-size:9pt;font-weight:700;border:1pt solid}
+
+  /* テーブル */
+  .pr-table{width:100%;border-collapse:collapse;margin-bottom:10pt}
+  .pr-table th{font-size:8.5pt;font-weight:700;padding:4pt 5pt;border:0.5pt solid #aaa;background:#f0f0f0;text-align:left;white-space:nowrap}
+  .pr-table td{font-size:10pt;padding:4pt 5pt;border:0.5pt solid #ccc;vertical-align:middle}
+  .pr-table tr:nth-child(even) td{background:#fafafa}
+
+  /* チェック欄 */
+  .pr-chk{width:22pt;text-align:center;font-size:14pt;color:#ccc}
+
+  /* 付添セクション */
+  .pr-comp-hdr{font-size:9pt;font-weight:700;color:#555;margin:8pt 0 3pt;padding-left:2pt;border-left:3pt solid #aaa;padding-top:1pt}
+
+  /* フッター */
+  .pr-foot{margin-top:6pt;font-size:8pt;color:#888;display:flex;justify-content:space-between}
+
+  /* バッジ色 */
+  .badge-paid{background:#d4edba;color:#27500a;border-color:#8fbf50}
+  .badge-sent{background:#d0e8f8;color:#0c447c;border-color:#6aabdf}
+  .badge-none{background:#f0f0ee;color:#888;border-color:#ccc}
+}
 </style>
 </head>
 <body>
@@ -168,6 +214,7 @@ input.sin{width:50px;padding:5px 7px;border:0.5px solid var(--bdr2);border-radiu
       <input type="file" id="csvIn" accept=".csv" style="display:none">
       <button class="btn-imp" onclick="document.getElementById('csvIn').click()">📂 CSV読み込み</button>
       <button class="btn-exp" onclick="doExport()">💾 CSV書き出し</button>
+      <button class="btn-print" onclick="doPrint()" title="当日名簿を印刷・PDF出力します">🖨 名簿印刷</button>
       <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
         <button class="btn-danger" id="clrBtn" onclick="doClear()" title="この端末のブラウザ上のデータのみ削除します。GitHubのデータは残ります。">🗑 端末のみ削除</button>
         <button class="btn-warn" id="fullResetBtn" onclick="doFullReset()" title="この端末のデータとGitHub上のデータを両方削除します。">⚠️ 全てリセット（GitHub含む）</button>
@@ -201,7 +248,6 @@ input.sin{width:50px;padding:5px 7px;border:0.5px solid var(--bdr2);border-radiu
         <select class="fsel" id="bfil" onchange="renderList()">
           <option value="">全員表示</option>
           <option value="__none">未割当のみ</option>
-          <option value="__comp">付添者のみ</option>
           <option value="春定丸">春定丸</option>
           <option value="甚五郎丸">甚五郎丸</option>
           <option value="日吉丸">日吉丸</option>
@@ -219,7 +265,7 @@ input.sin{width:50px;padding:5px 7px;border:0.5px solid var(--bdr2);border-radiu
       <div class="twrap">
         <table>
           <thead><tr>
-            <th>#</th><th>名前</th><th>付添者</th><th>同船希望</th><th>レンタル</th><th>Tシャツ</th><th>船番号 <span style="font-weight:400;font-size:10px;opacity:0.6">（船別ビューで編集）</span></th><th>釣座</th><th>入金ステータス</th>
+            <th>#</th><th>名前</th><th>付添者</th><th>同船希望</th><th>レンタル</th><th>Tシャツ</th><th>船番号 <span style="font-weight:400;font-size:10px;opacity:0.6">（船別ビューで編集）</span></th><th>釣座</th><th>入金ステータス</th><th></th>
           </tr></thead>
           <tbody id="listBody"></tbody>
         </table>
@@ -271,7 +317,10 @@ input.sin{width:50px;padding:5px 7px;border:0.5px solid var(--bdr2);border-radiu
       複数人で使う場合は、各自がトークンを発行して同じリポジトリ・パスを設定してください。
     </div>
   </div>
-</div>
+</div><!-- /#wrap -->
+
+<!-- 印刷用名簿（@media printでのみ表示） -->
+<div id="printRoster"></div>
 
 <script>
 const BOATS=['春定丸','甚五郎丸','日吉丸','竹宝丸','高栄丸'];
@@ -491,15 +540,6 @@ async function importCSV(file){
 // ============================
 function ga(id){return asgn[id]||{boat:'',seat:''}}
 
-function setBoat(id,b){
-  if(!asgn[id])asgn[id]={};
-  asgn[id].boat=b;
-  localSave();renderStats();renderList();
-  if(curTab==='boat')renderBoat();
-  if(curTab==='summary')renderSummary();
-}
-function setSeat(id,s){if(!asgn[id])asgn[id]={};asgn[id].seat=s;localSave();if(curTab==='boat')renderBoat()}
-
 // ============================
 // 入金ステータス操作
 // ============================
@@ -565,8 +605,7 @@ function renderList(){
     if(q&&!p.name.toLowerCase().includes(q)&&!(p.pref||'').toLowerCase().includes(q)&&!(p.parentName||'').toLowerCase().includes(q))return false;
     const b=ga(p.id).boat;
     if(bf==='__none'&&b)return false;
-    if(bf==='__comp'&&p.type!=='companion')return false;
-    if(bf&&bf!=='__none'&&bf!=='__comp'&&b!==bf)return false;
+    if(bf&&bf!=='__none'&&b!==bf)return false;
     // 入金フィルター
     const ps_=p.payStatus||'';
     if(pf==='__pay_none'&&ps_!=='')return false;
@@ -576,7 +615,7 @@ function renderList(){
   });
 
   if(!fl.length){
-    document.getElementById('listBody').innerHTML=`<tr><td colspan="9" class="empty-msg">${ps.length===0?'「📂 CSV読み込み」からGoogleフォームのCSVを選択するか、<br>「⬇ 最新を取得」でGitHubからデータを読み込んでください':'該当する参加者がいません'}</td></tr>`;
+    document.getElementById('listBody').innerHTML=`<tr><td colspan="10" class="empty-msg">${ps.length===0?'「📂 CSV読み込み」からGoogleフォームのCSVを選択するか、<br>「⬇ 最新を取得」でGitHubからデータを読み込んでください':'該当する参加者がいません'}</td></tr>`;
     return;
   }
   document.getElementById('listBody').innerHTML=fl.map(p=>{
@@ -604,6 +643,7 @@ function renderList(){
       <td><span class="chip" style="${cs}">${a.boat||'未割当'}</span></td>
       <td style="text-align:center;color:var(--txt2);font-size:13px">${a.seat||'-'}</td>
       <td>${paySel}</td>
+      <td style="text-align:center"><button id="delbtn_${paySelId(p.id)}" onclick="deleteParticipant('${pid_esc}',this)" style="padding:3px 8px;font-size:11px;color:var(--err-tx);border-color:var(--err-br);border-radius:6px;border:0.5px solid;background:transparent;cursor:pointer" title="この参加者を削除">🗑</button></td>
     </tr>`;
   }).join('');
 }
@@ -690,8 +730,8 @@ function setCompSeat(boat,seat,val){
 function renderBoat(){
   document.getElementById('boatNav').innerHTML=BOATS.map(b=>{
     const cfg=BOAT_CFG[b];
-    const fisherCnt=ps.filter(p=>p.type!=='companion'&&ga(p.id).boat===b).length;
-    const compCnt=ps.filter(p=>p.type==='companion'&&ga(p.id).boat===b).length;
+    const fisherCnt=ps.filter(p=>ga(p.id).boat===b).length;
+    const compCnt=compAsgn[b]?Object.values(compAsgn[b]).filter(v=>v&&v.trim()!=='').length:0;
     const act=b===curBoat,col=BC[b];
     const st=act?`background:${col.bg};color:${col.tx};border-color:${col.br};font-weight:600`:'';
     const label=cfg.compSeats>0?`${fisherCnt}+${compCnt}名`:`${fisherCnt}名`;
@@ -700,14 +740,13 @@ function renderBoat(){
 
   const cfg=BOAT_CFG[curBoat];
   const col=BC[curBoat];
-  const smF={},smC={};
+  const smF={};
   ps.forEach(p=>{
     const a=ga(p.id);
     if(a.boat!==curBoat)return;
     const s=parseInt(a.seat);
     if(!s)return;
-    if(a.seatType==='companion')smC[s]=p;
-    else smF[s]=p;
+    smF[s]=p;
   });
 
   const fishGrid=renderSeatGrid(cfg.seats,smF,col,'fishing');
@@ -769,7 +808,6 @@ function onSeatClick(e,seat,pid,seatType){
   if(!selectedId){selectedId=pid;renderBoat();return;}
   if(selectedId===pid){selectedId=null;renderBoat();return;}
   const selA=ga(selectedId);
-  const targetA=ga(pid);
   if(!asgn[pid])asgn[pid]={};
   if(selA.boat){asgn[pid].boat=selA.boat;asgn[pid].seat=selA.seat;asgn[pid].seatType=selA.seatType||'fishing';}
   else{asgn[pid]={boat:'',seat:'',seatType:'fishing'};}
@@ -1052,7 +1090,176 @@ async function doFullReset(){
 
 document.getElementById('csvIn').addEventListener('change',e=>{if(e.target.files[0])importCSV(e.target.files[0]);e.target.value=''});
 
+// ============================
+// 参加者削除
+// ============================
+let _delPending=null; // 削除確認中のID
+function deleteParticipant(id, btn){
+  if(_delPending===id){
+    // 2回目：実際に削除
+    const target=ps.find(p=>p.id===id);
+    const name=target?target.name:'?';
+    ps=ps.filter(p=>p.id!==id);
+    delete asgn[id];
+    _delPending=null;
+    localSave();
+    render();
+    showN(`「${name}」を削除しました。GitHubへ保存してください。`,'warning');
+  } else {
+    // 1回目：確認状態に変える
+    // 他に確認中のボタンがあればリセット
+    if(_delPending){
+      const prev=document.getElementById('delbtn_'+paySelId(_delPending));
+      if(prev){prev.textContent='🗑';prev.style.background='transparent';prev.style.color='var(--err-tx)';}
+    }
+    _delPending=id;
+    btn.textContent='本当に削除？';
+    btn.style.background='var(--err-bg)';
+    btn.style.color='var(--err-tx)';
+    btn.style.fontWeight='600';
+    // 4秒後に自動リセット
+    setTimeout(()=>{
+      if(_delPending===id){
+        _delPending=null;
+        btn.textContent='🗑';
+        btn.style.background='transparent';
+        btn.style.fontWeight='normal';
+      }
+    },4000);
+  }
+}
+
+// ============================
+// 印刷名簿生成
+// ============================
+function doPrint(){
+  if(!ps.length){showN('データがありません','error');return}
+
+  const now=new Date().toLocaleString('ja-JP');
+  const eventDate='2026年8月3日（月）';
+  const payLabelMap={'':'未対応','sent':'送信済み','paid':'入金済み'};
+  const payBadgeClass={'':'badge-none','sent':'badge-sent','paid':'badge-paid'};
+
+  let html='';
+
+  BOATS.forEach(boatName=>{
+    const cfg=BOAT_CFG[boatName];
+    // 釣座に割り当て済みの参加者（釣座番号順）
+    const fishers=ps
+      .filter(p=>ga(p.id).boat===boatName)
+      .sort((a,b)=>{
+        const sa=parseInt(ga(a.id).seat)||999;
+        const sb=parseInt(ga(b.id).seat)||999;
+        return sa-sb;
+      });
+
+    // 付添席
+    const compEntries=[];
+    if(cfg.compSeats>0 && compAsgn[boatName]){
+      for(let i=1;i<=cfg.compSeats;i++){
+        const name=(compAsgn[boatName][i]||'').trim();
+        compEntries.push({seat:i, name});
+      }
+    }
+
+    const totalFisher=fishers.length;
+    const totalComp=compEntries.filter(c=>c.name).length;
+    const paidCnt=fishers.filter(p=>p.payStatus==='paid').length;
+
+    // 釣座テーブル行（釣座番号順、未割当は末尾）
+    const fisherRows=[];
+    fishers.forEach(p=>{
+      const a=ga(p.id);
+      const payVal=p.payStatus||'';
+      const hc=p.compType&&p.compType!=='本人のみ';
+      const ren=p.rental&&!p.rental.includes('無し')?'✔':'';
+      const tsh=p.tshirt&&!p.tshirt.includes('しない')?(p.tsize||'購入'):'';
+      const hasSeat=!!a.seat;
+      fisherRows.push(`<tr${hasSeat?'':' style="opacity:0.65"'}>
+        <td style="text-align:center;font-weight:700;color:${hasSeat?'#555':'#aaa'}">${a.seat||'-'}</td>
+        <td style="font-weight:600">${escP(p.name)}</td>
+        <td>${hc?escP(p.compName||p.compCnt||'あり'):''}</td>
+        <td style="text-align:center">${ren}</td>
+        <td style="font-size:9pt">${tsh}</td>
+        <td style="text-align:center"><span class="pr-badge ${payBadgeClass[payVal]}">${payLabelMap[payVal]}</span></td>
+        <td class="pr-chk">□</td>
+      </tr>`);
+    });
+
+    // 空釣座行（名前なし）
+    const assignedSeats=new Set(fishers.map(p=>parseInt(ga(p.id).seat)).filter(Boolean));
+    for(let s=1;s<=cfg.seats;s++){
+      if(!assignedSeats.has(s)){
+        fisherRows.push(`<tr>
+          <td style="text-align:center;font-weight:700;color:#bbb">${s}</td>
+          <td style="color:#ccc">（空席）</td>
+          <td></td><td></td><td></td><td></td>
+          <td class="pr-chk"></td>
+        </tr>`);
+      }
+    }
+
+    // 付添テーブル行
+    let compSection='';
+    if(cfg.compSeats>0){
+      const compRows=compEntries.map(c=>`<tr>
+        <td style="text-align:center;font-weight:700;color:#555">${c.seat}</td>
+        <td style="font-weight:600">${c.name?escP(c.name):'<span style="color:#ccc">（空席）</span>'}</td>
+        <td class="pr-chk">${c.name?'□':''}</td>
+      </tr>`).join('');
+      compSection=`
+        <div class="pr-comp-hdr">付添席（${totalComp}/${cfg.compSeats}名）</div>
+        <table class="pr-table">
+          <thead><tr>
+            <th style="width:30pt">席</th>
+            <th>氏名</th>
+            <th style="width:28pt;text-align:center">出欠</th>
+          </tr></thead>
+          <tbody>${compRows}</tbody>
+        </table>`;
+    }
+
+    html+=`<div class="pr-page">
+      <div class="pr-hdr">
+        <div>
+          <div class="pr-title">IKA de Night 第6回　${boatName}</div>
+          <div class="pr-subtitle">${eventDate}　色浜（敦賀）</div>
+        </div>
+        <div class="pr-meta">
+          釣座：${totalFisher} / ${cfg.seats}名${cfg.compSeats>0?' ｜ 付添：'+totalComp+' / '+cfg.compSeats+'名':''}<br>
+          入金済み：${paidCnt}名<br>
+          出力日時：${now}
+        </div>
+      </div>
+      <table class="pr-table">
+        <thead><tr>
+          <th style="width:28pt">釣座</th>
+          <th>氏名</th>
+          <th style="width:70pt">付添者</th>
+          <th style="width:36pt;text-align:center">レンタル</th>
+          <th style="width:52pt">Tシャツ</th>
+          <th style="width:56pt;text-align:center">入金</th>
+          <th style="width:28pt;text-align:center">出欠</th>
+        </tr></thead>
+        <tbody>${fisherRows.join('')}</tbody>
+      </table>
+      ${compSection}
+      <div class="pr-foot">
+        <span>IKA de Night 管理ツール ｜ 中小企業診断士 三浦克彦</span>
+        <span>${boatName}　計 ${totalFisher}名（釣座）${cfg.compSeats>0?' ＋ '+totalComp+'名（付添）':''}</span>
+      </div>
+    </div>`;
+  });
+
+  document.getElementById('printRoster').innerHTML=html;
+  window.print();
+}
+
+function escP(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+// ============================
 // 初期化
+// ============================
 (function init(){
   const c=loadGHConfig();
   if(c){
@@ -1064,7 +1271,7 @@ document.getElementById('csvIn').addEventListener('change',e=>{if(e.target.files
   }
   const state=localLoad();
   if(state){ps=state.ps||[];asgn=state.asgn||{};render()}
-  else{document.getElementById('listBody').innerHTML=`<tr><td colspan="9" class="empty-msg">GitHub設定後に「⬇ 最新を取得」、または<br>「📂 CSV読み込み」でデータを読み込んでください</td></tr>`}
+  else{document.getElementById('listBody').innerHTML=`<tr><td colspan="10" class="empty-msg">GitHub設定後に「⬇ 最新を取得」、または<br>「📂 CSV読み込み」でデータを読み込んでください</td></tr>`}
 })();
 </script>
 </body>
