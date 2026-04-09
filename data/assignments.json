@@ -12,7 +12,8 @@
       "pref": "古川博之",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/03/28 10:38:22",
@@ -306,7 +307,8 @@
       "pref": "小崎高司",
       "tshirt": "購入する",
       "tsize": "2L",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/03/31 18:56:34",
@@ -376,7 +378,8 @@
       "pref": "フィッシングGO",
       "tshirt": "購入する",
       "tsize": "2L",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/03/31 22:31:15",
@@ -558,7 +561,8 @@
       "pref": "",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/04/02 10:32:11",
@@ -950,7 +954,8 @@
       "pref": "山田博康",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/04/09 12:54:57",
@@ -979,10 +984,24 @@
       "tshirt": "購入しない",
       "tsize": "",
       "notes": ""
+    },
+    {
+      "id": "2026/04/09 14:40:22",
+      "name": "秋田　脩志",
+      "type": "fisher",
+      "phone": "09064643360",
+      "compType": "本人のみ",
+      "compCnt": "",
+      "compName": "",
+      "rental": "レンタル無し",
+      "pref": "船戸　善浩",
+      "tshirt": "購入しない",
+      "tsize": "",
+      "notes": ""
     }
   ],
   "asgn": {},
   "compAsgn": {},
-  "savedAt": "2026-04-09T04:48:50.472Z",
+  "savedAt": "2026-04-09T07:13:23.892Z",
   "savedBy": "IKAdeNight管理ツール"
 }
