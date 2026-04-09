@@ -873,20 +873,6 @@
       "notes": ""
     },
     {
-      "id": "←振込依頼メール送信済み",
-      "name": "←振込依頼メール送信済み",
-      "type": "fisher",
-      "phone": "",
-      "compType": "",
-      "compCnt": "",
-      "compName": "",
-      "rental": "",
-      "pref": "",
-      "tshirt": "",
-      "tsize": "",
-      "notes": ""
-    },
-    {
       "id": "2026/04/09 11:43:57",
       "name": "山田直樹",
       "type": "fisher",
@@ -1044,6 +1030,6 @@
   ],
   "asgn": {},
   "compAsgn": {},
-  "savedAt": "2026-04-09T10:06:48.262Z",
+  "savedAt": "2026-04-09T14:35:33.662Z",
   "savedBy": "IKAdeNight管理ツール"
 }
