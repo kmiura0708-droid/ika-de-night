@@ -1207,9 +1207,323 @@
       "boat": "甚五郎丸",
       "seat": "2",
       "seatType": "fishing"
+    },
+    "2026/04/08 21:12:35": {
+      "boat": "甚五郎丸",
+      "seat": "1",
+      "seatType": "fishing"
+    },
+    "2026/04/08 14:36:12": {
+      "boat": "甚五郎丸",
+      "seat": "3",
+      "seatType": "fishing"
+    },
+    "2026/04/08 15:12:00": {
+      "boat": "甚五郎丸",
+      "seat": "4",
+      "seatType": "fishing"
+    },
+    "2026/04/09 12:12:49": {
+      "boat": "甚五郎丸",
+      "seat": "5",
+      "seatType": "fishing"
+    },
+    "2026/04/09 12:15:30": {
+      "boat": "甚五郎丸",
+      "seat": "6",
+      "seatType": "fishing"
+    },
+    "2026/04/09 17:56:01": {
+      "boat": "甚五郎丸",
+      "seat": "7",
+      "seatType": "fishing"
+    },
+    "2026/04/09 19:16:02": {
+      "boat": "甚五郎丸",
+      "seat": "8",
+      "seatType": "fishing"
+    },
+    "2026/03/31 18:25:45": {
+      "boat": "甚五郎丸",
+      "seat": "9",
+      "seatType": "fishing"
+    },
+    "2026/04/09 17:13:06": {
+      "boat": "甚五郎丸",
+      "seat": "10",
+      "seatType": "fishing"
+    },
+    "2026/04/09 17:26:35": {
+      "boat": "甚五郎丸",
+      "seat": "11",
+      "seatType": "fishing"
+    },
+    "2026/04/03 22:44:34": {
+      "boat": "甚五郎丸",
+      "seat": "12",
+      "seatType": "fishing"
+    },
+    "2026/03/31 23:26:51": {
+      "boat": "甚五郎丸",
+      "seat": "13",
+      "seatType": "fishing"
+    },
+    "2026/03/31 18:04:01": {
+      "boat": "日吉丸",
+      "seat": "1",
+      "seatType": "fishing"
+    },
+    "2026/03/31 18:15:25": {
+      "boat": "日吉丸",
+      "seat": "2",
+      "seatType": "fishing"
+    },
+    "2026/03/31 18:16:36": {
+      "boat": "日吉丸",
+      "seat": "3",
+      "seatType": "fishing"
+    },
+    "2026/03/31 18:16:13": {
+      "boat": "日吉丸",
+      "seat": "4",
+      "seatType": "fishing"
+    },
+    "2026/03/31 18:15:50": {
+      "boat": "日吉丸",
+      "seat": "5",
+      "seatType": "fishing"
+    },
+    "2026/03/31 18:37:58": {
+      "boat": "日吉丸",
+      "seat": "6",
+      "seatType": "fishing"
+    },
+    "2026/04/01 18:50:54": {
+      "boat": "日吉丸",
+      "seat": "7",
+      "seatType": "fishing"
+    },
+    "2026/04/01 20:11:05": {
+      "boat": "日吉丸",
+      "seat": "8",
+      "seatType": "fishing"
+    },
+    "2026/04/02 0:17:56": {
+      "boat": "日吉丸",
+      "seat": "9",
+      "seatType": "fishing"
+    },
+    "2026/04/09 12:35:43": {
+      "boat": "日吉丸",
+      "seat": "10",
+      "seatType": "fishing"
+    },
+    "2026/03/28 12:44:59": {
+      "boat": "日吉丸",
+      "seat": "11",
+      "seatType": "fishing"
+    },
+    "2026/04/03 18:01:27": {
+      "boat": "日吉丸",
+      "seat": "12",
+      "seatType": "fishing"
+    },
+    "2026/03/28 13:41:53": {
+      "boat": "日吉丸",
+      "seat": "13",
+      "seatType": "fishing"
+    },
+    "2026/04/01 16:20:10": {
+      "boat": "日吉丸",
+      "seat": "14",
+      "seatType": "fishing"
+    },
+    "2026/04/03 21:31:55": {
+      "boat": "日吉丸",
+      "seat": "15",
+      "seatType": "fishing"
+    },
+    "2026/04/03 21:34:12": {
+      "boat": "日吉丸",
+      "seat": "16",
+      "seatType": "fishing"
+    },
+    "2026/04/03 7:37:16": {
+      "boat": "竹宝丸",
+      "seat": "2",
+      "seatType": "fishing"
+    },
+    "2026/03/31 18:56:34": {
+      "boat": "竹宝丸",
+      "seat": "1",
+      "seatType": "fishing"
+    },
+    "2026/04/01 15:41:34": {
+      "boat": "竹宝丸",
+      "seat": "3",
+      "seatType": "fishing"
+    },
+    "2026/04/03 8:08:04": {
+      "boat": "竹宝丸",
+      "seat": "4",
+      "seatType": "fishing"
+    },
+    "2026/04/06 18:13:24": {
+      "boat": "竹宝丸",
+      "seat": "5",
+      "seatType": "fishing"
+    },
+    "2026/04/06 19:24:06": {
+      "boat": "竹宝丸",
+      "seat": "6",
+      "seatType": "fishing"
+    },
+    "2026/04/07 15:59:59": {
+      "boat": "竹宝丸",
+      "seat": "7",
+      "seatType": "fishing"
+    },
+    "2026/04/09 22:08:29": {
+      "boat": "竹宝丸",
+      "seat": "8",
+      "seatType": "fishing"
+    },
+    "2026/04/09 14:40:22": {
+      "boat": "竹宝丸",
+      "seat": "10",
+      "seatType": "fishing"
+    },
+    "2026/03/31 22:04:49": {
+      "boat": "竹宝丸",
+      "seat": "9",
+      "seatType": "fishing"
+    },
+    "2026/04/03 14:46:12": {
+      "boat": "竹宝丸",
+      "seat": "11",
+      "seatType": "fishing"
+    },
+    "2026/03/28 10:34:59": {
+      "boat": "竹宝丸",
+      "seat": "12",
+      "seatType": "fishing"
+    },
+    "2026/03/28 10:38:22": {
+      "boat": "竹宝丸",
+      "seat": "13",
+      "seatType": "fishing"
+    },
+    "2026/03/28 12:18:32": {
+      "boat": "竹宝丸",
+      "seat": "14",
+      "seatType": "fishing"
+    },
+    "2026/03/28 12:26:11": {
+      "boat": "竹宝丸",
+      "seat": "15",
+      "seatType": "fishing"
+    },
+    "2026/03/31 21:54:03": {
+      "boat": "竹宝丸",
+      "seat": "16",
+      "seatType": "fishing"
+    },
+    "2026/04/02 12:57:42": {
+      "boat": "竹宝丸",
+      "seat": "17",
+      "seatType": "fishing"
+    },
+    "2026/04/10 7:45:40": {
+      "boat": "竹宝丸",
+      "seat": "18",
+      "seatType": "fishing"
+    },
+    "2026/04/10 7:54:18": {
+      "boat": "竹宝丸",
+      "seat": "19",
+      "seatType": "fishing"
+    },
+    "2026/03/28 21:50:23": {
+      "boat": "高栄丸",
+      "seat": "1",
+      "seatType": "fishing"
+    },
+    "2026/03/31 22:06:42": {
+      "boat": "高栄丸",
+      "seat": "2",
+      "seatType": "fishing"
+    },
+    "2026/04/02 10:32:11": {
+      "boat": "高栄丸",
+      "seat": "3",
+      "seatType": "fishing"
+    },
+    "2026/04/03 11:36:39": {
+      "boat": "高栄丸",
+      "seat": "4",
+      "seatType": "fishing"
+    },
+    "2026/04/03 12:40:40": {
+      "boat": "高栄丸",
+      "seat": "5",
+      "seatType": "fishing"
+    },
+    "2026/04/05 12:39:27": {
+      "boat": "高栄丸",
+      "seat": "6",
+      "seatType": "fishing"
+    },
+    "2026/04/09 12:54:57": {
+      "boat": "高栄丸",
+      "seat": "7",
+      "seatType": "fishing"
+    },
+    "2026/03/31 22:31:15": {
+      "boat": "高栄丸",
+      "seat": "9",
+      "seatType": "fishing"
+    },
+    "2026/04/01 12:17:27": {
+      "boat": "高栄丸",
+      "seat": "12",
+      "seatType": "fishing"
+    },
+    "2026/04/01 12:31:09": {
+      "boat": "高栄丸",
+      "seat": "10",
+      "seatType": "fishing"
+    },
+    "2026/04/02 13:07:20": {
+      "boat": "高栄丸",
+      "seat": "11",
+      "seatType": "fishing"
+    },
+    "2026/04/03 12:28:57": {
+      "boat": "高栄丸",
+      "seat": "8",
+      "seatType": "fishing"
     }
   },
-  "compAsgn": {},
-  "savedAt": "2026-04-10T23:41:45.442Z",
+  "compAsgn": {
+    "高栄丸": {
+      "1": "池田真人",
+      "2": "池田歩叶"
+    },
+    "甚五郎丸": {
+      "1": "平野ありさ",
+      "2": "平野理斗",
+      "3": "南　理恵",
+      "4": "岡田沙那果"
+    },
+    "日吉丸": {
+      "1": "小崎泰心",
+      "2": "小崎結心"
+    },
+    "春定丸": {
+      "1": "猪飼　瑛心",
+      "2": "梶原　瑚可"
+    }
+  },
+  "savedAt": "2026-04-11T02:25:21.251Z",
   "savedBy": "IKAdeNight管理ツール"
 }
