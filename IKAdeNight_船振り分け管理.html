@@ -265,7 +265,7 @@ select.psel.paid{background:var(--suc-bg);color:var(--suc-tx);border-color:var(-
       <div class="twrap">
         <table>
           <thead><tr>
-            <th>#</th><th>名前</th><th>付添者</th><th>同船希望</th><th>レンタル</th><th>Tシャツ</th><th>船番号 <span style="font-weight:400;font-size:10px;opacity:0.6">（船別ビューで編集）</span></th><th>釣座</th><th>入金ステータス</th><th></th>
+            <th>#</th><th>名前</th><th>付添者</th><th>同船希望</th><th>レンタル</th><th>Tシャツ</th><th>船番号</th><th>釣座</th><th>入金ステータス</th><th></th>
           </tr></thead>
           <tbody id="listBody"></tbody>
         </table>
@@ -517,6 +517,43 @@ async function importCSV(file){
   if(rows.length<2){showN('CSVの形式が正しくありません','error');return}
   const hs=rows[0];
   const mainPs=rows.slice(1).map(r=>mapP(hs,r)).filter(p=>p.name);
+
+  // ============================
+  // 重複インポート検出
+  // ============================
+  if(ps.length>0){
+    const ex=new Map(ps.map(p=>[p.id,p]));
+    const wouldAdd=mainPs.filter(p=>!ex.has(p.id)).length;
+
+    // 新規追加ゼロ＝全員すでに存在 → 完全重複
+    if(wouldAdd===0){
+      if(!confirm(
+        `⚠️ 重複インポートの可能性があります\n\n` +
+        `現在のデータ：${ps.length}名\n` +
+        `読み込もうとしているCSV：${mainPs.length}名\n` +
+        `新規追加：0名（全員すでに登録済み）\n\n` +
+        `同じCSVを2回取り込もうとしている可能性があります。\n` +
+        `このまま続けると既存データが上書きされます（入金ステータスは保持）。\n\n` +
+        `続けますか？`
+      )){
+        showN('インポートをキャンセルしました','info');
+        return;
+      }
+    }
+    // 新規追加があるが既存より大幅に多い → 念のため警告
+    else if(wouldAdd>0 && (ps.length+wouldAdd) > ps.length*1.5){
+      if(!confirm(
+        `⚠️ 参加者数が大幅に増加します\n\n` +
+        `現在のデータ：${ps.length}名\n` +
+        `読み込み後：${ps.length+wouldAdd}名（＋${wouldAdd}名）\n\n` +
+        `続けますか？`
+      )){
+        showN('インポートをキャンセルしました','info');
+        return;
+      }
+    }
+  }
+
   const ex=new Map(ps.map(p=>[p.id,p]));
   let added=0,updated=0;
   mainPs.forEach(p=>{
