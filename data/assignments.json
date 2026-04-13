@@ -55,7 +55,8 @@
       "pref": "水道局　古川博之",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": "水道局"
+      "notes": "水道局",
+      "payStatus": "paid"
     },
     {
       "id": "2026/03/28 12:26:11",
@@ -69,7 +70,8 @@
       "pref": "水道局　松本智志",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/03/28 12:44:59",
@@ -111,7 +113,8 @@
       "pref": "",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/03/28 13:41:53",
@@ -223,7 +226,8 @@
       "pref": "望月さん含め3名",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/03/31 18:15:25",
@@ -237,7 +241,8 @@
       "pref": "小崎　高司",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/03/31 18:15:50",
@@ -265,7 +270,8 @@
       "pref": "小崎高司",
       "tshirt": "購入する",
       "tsize": "2L",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/03/31 18:16:36",
@@ -279,7 +285,8 @@
       "pref": "小崎　高司",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/03/31 18:25:45",
@@ -350,7 +357,8 @@
       "pref": "水道局です",
       "tshirt": "購入する",
       "tsize": "M",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/03/31 22:04:49",
@@ -533,7 +541,8 @@
       "pref": "諸戸 直之",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/04/01 20:11:05",
@@ -646,7 +655,8 @@
       "pref": "小林隆",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/04/03 12:28:57",
@@ -674,7 +684,8 @@
       "pref": "附柴たかゆき　藤井あきのり",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/04/03 14:46:12",
@@ -842,7 +853,8 @@
       "pref": "水野裕也　平野ありさ　平野りと　水野ちか",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/04/08 15:12:00",
@@ -1110,6 +1122,20 @@
       "tshirt": "購入しない",
       "tsize": "",
       "notes": ""
+    },
+    {
+      "id": "2026/04/11 11:39:04",
+      "name": "荒井一将",
+      "type": "fisher",
+      "phone": "080-5126-0220",
+      "compType": "本人のみ",
+      "compCnt": "",
+      "compName": "",
+      "rental": "レンタル希望",
+      "pref": "南　理恵",
+      "tshirt": "購入しない",
+      "tsize": "",
+      "notes": ""
     }
   ],
   "asgn": {
@@ -1245,27 +1271,27 @@
     },
     "2026/03/31 18:25:45": {
       "boat": "甚五郎丸",
-      "seat": "9",
+      "seat": "10",
       "seatType": "fishing"
     },
     "2026/04/09 17:13:06": {
       "boat": "甚五郎丸",
-      "seat": "10",
+      "seat": "11",
       "seatType": "fishing"
     },
     "2026/04/09 17:26:35": {
       "boat": "甚五郎丸",
-      "seat": "11",
+      "seat": "12",
       "seatType": "fishing"
     },
     "2026/04/03 22:44:34": {
       "boat": "甚五郎丸",
-      "seat": "12",
+      "seat": "13",
       "seatType": "fishing"
     },
     "2026/03/31 23:26:51": {
       "boat": "甚五郎丸",
-      "seat": "13",
+      "seat": "14",
       "seatType": "fishing"
     },
     "2026/03/31 18:04:01": {
@@ -1502,6 +1528,11 @@
       "boat": "高栄丸",
       "seat": "8",
       "seatType": "fishing"
+    },
+    "2026/04/11 11:39:04": {
+      "boat": "甚五郎丸",
+      "seat": "9",
+      "seatType": "fishing"
     }
   },
   "compAsgn": {
@@ -1524,6 +1555,6 @@
       "2": "梶原　瑚可"
     }
   },
-  "savedAt": "2026-04-11T02:25:21.251Z",
+  "savedAt": "2026-04-13T13:14:40.280Z",
   "savedBy": "IKAdeNight管理ツール"
 }
