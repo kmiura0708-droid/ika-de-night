@@ -157,7 +157,8 @@
       "pref": "山田直樹",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/03/28 21:50:23",
@@ -257,7 +258,8 @@
       "pref": "小崎高司",
       "tshirt": "購入する",
       "tsize": "M",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/03/31 18:16:13",
@@ -344,7 +346,8 @@
       "pref": "平松まほさん",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/03/31 21:54:03",
@@ -403,7 +406,8 @@
       "pref": "",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/03/31 23:26:51",
@@ -445,7 +449,8 @@
       "pref": "久保馨、平田俊介、伊藤祥平",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/04/01 12:31:09",
@@ -459,7 +464,8 @@
       "pref": "久保馨、伊藤祥平、伊東",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/04/01 12:36:14",
@@ -530,7 +536,8 @@
       "pref": "大竹　宏尚",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/04/01 20:00:27",
@@ -588,7 +595,8 @@
       "pref": "池田　真人",
       "tshirt": "購入する",
       "tsize": "2L",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/04/02 12:57:42",
@@ -616,7 +624,8 @@
       "pref": "久保馨　平田俊輔　伊東恒介",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/04/03 7:37:16",
@@ -899,7 +908,8 @@
       "pref": "尾嶋和貴、松山真也",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/04/09 12:12:49",
@@ -1545,6 +1555,6 @@
       "2": "梶原　瑚可"
     }
   },
-  "savedAt": "2026-04-14T07:31:20.655Z",
+  "savedAt": "2026-04-16T07:25:36.081Z",
   "savedBy": "IKAdeNight管理ツール"
 }
