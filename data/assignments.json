@@ -1186,7 +1186,8 @@
       "pref": "梶原健一",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     }
   ],
   "asgn": {
@@ -1612,6 +1613,6 @@
       "2": "梶原　瑚可"
     }
   },
-  "savedAt": "2026-05-03T09:38:37.588Z",
+  "savedAt": "2026-05-07T00:15:49.187Z",
   "savedBy": "IKAdeNight管理ツール"
 }
