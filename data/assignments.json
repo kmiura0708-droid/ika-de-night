@@ -1631,6 +1631,26 @@
       "boat": "春定丸",
       "seat": "4",
       "seatType": "fishing"
+    },
+    "2026/05/21 12:41:04": {
+      "boat": "春定丸",
+      "seat": "16",
+      "seatType": "fishing"
+    },
+    "2026/05/21 12:45:06": {
+      "boat": "春定丸",
+      "seat": "17",
+      "seatType": "fishing"
+    },
+    "2026/05/21 13:01:20": {
+      "boat": "春定丸",
+      "seat": "18",
+      "seatType": "fishing"
+    },
+    "2026/05/21 13:04:32": {
+      "boat": "春定丸",
+      "seat": "19",
+      "seatType": "fishing"
     }
   },
   "compAsgn": {
@@ -1654,6 +1674,6 @@
       "2": "梶原　瑚可"
     }
   },
-  "savedAt": "2026-05-21T07:19:57.011Z",
+  "savedAt": "2026-05-21T08:26:06.894Z",
   "savedBy": "IKAdeNight管理ツール"
 }
