@@ -1254,7 +1254,8 @@
       "pref": "",
       "tshirt": "購入しない",
       "tsize": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     }
   ],
   "asgn": {
@@ -1700,6 +1701,6 @@
       "2": "梶原　瑚可"
     }
   },
-  "savedAt": "2026-06-04T13:44:34.452Z",
+  "savedAt": "2026-06-26T07:20:45.958Z",
   "savedBy": "IKAdeNight管理ツール"
 }
