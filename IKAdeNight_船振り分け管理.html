@@ -186,6 +186,8 @@ select.psel.paid{background:var(--suc-bg);color:var(--suc-tx);border-color:var(-
 
   /* チェック欄 */
   .pr-chk{width:22pt;text-align:center;font-size:14pt;color:#ccc}
+  .pr-na{color:#ccc;font-size:11pt}
+  .pr-comp-row td{background:#fcfcfc!important;font-size:9pt;color:#555}
 
   /* 付添セクション */
   .pr-comp-hdr{font-size:9pt;font-weight:700;color:#555;margin:8pt 0 3pt;padding-left:2pt;border-left:3pt solid #aaa;padding-top:1pt}
@@ -214,7 +216,8 @@ select.psel.paid{background:var(--suc-bg);color:var(--suc-tx);border-color:var(-
       <input type="file" id="csvIn" accept=".csv" style="display:none">
       <button class="btn-imp" onclick="document.getElementById('csvIn').click()">📂 CSV読み込み</button>
       <button class="btn-exp" onclick="doExport()">💾 CSV書き出し</button>
-      <button class="btn-print" onclick="doPrint()" title="当日名簿を印刷・PDF出力します">🖨 名簿印刷</button>
+      <button class="btn-print" onclick="doPrintRoster()" title="船宿提出用の乗船名簿（釣座・氏名・住所・TEL）を船別に印刷します">🖨 乗船名簿（船宿用）</button>
+      <button class="btn-print" onclick="doPrintPayment()" title="受付用の金銭チェック表（参加費・レンタル・Tシャツ・ロゴ協賛費）を船別に印刷します">🖨 金銭チェック表（受付用）</button>
       <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
         <button class="btn-danger" id="clrBtn" onclick="doClear()" title="この端末のブラウザ上のデータのみ削除します。GitHubのデータは残ります。">🗑 端末のみ削除</button>
         <button class="btn-warn" id="fullResetBtn" onclick="doFullReset()" title="この端末のデータとGitHub上のデータを両方削除します。">⚠️ 全てリセット（GitHub含む）</button>
@@ -509,6 +512,9 @@ function mapP(hs,r){
     pref:gf(hs,r,'同船希望者名'),
     tshirt:gf(hs,r,'オリジナルTシャツ購入'),
     tsize:gf(hs,r,'サイズを選択してください'),
+    address:gf(hs,r,'住所'),
+    sponsorLogo:gf(hs,r,'協賛ロゴ掲載について'),
+    sponsorName:gf(hs,r,'企業名（または掲載名）'),
     notes:gf(hs,r,'ご質問・ご要望・その他（自由記述）')};
 }
 async function importCSV(file){
@@ -1167,132 +1173,176 @@ function deleteParticipant(id, btn){
 }
 
 // ============================
-// 印刷名簿生成
+// 印刷共通ヘルパー
 // ============================
-function doPrint(){
-  if(!ps.length){showN('データがありません','error');return}
+function escP(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 
+// 付添者名を配列化（「、」「,」「，」区切り。空要素は除去）
+function splitCompNames(p){
+  const hasComp = p.compType && p.compType.trim()!=='' && p.compType!=='本人のみ';
+  if(!hasComp) return [];
+  const raw=(p.compName||'').split(/[、,，]/).map(s=>s.trim()).filter(Boolean);
+  if(raw.length>0) return raw;
+  // 付添ありだが名前未入力 → 人数分の空プレースホルダ（最低1）
+  const n=parseInt((p.compCnt||'').replace(/[^0-9]/g,''))||1;
+  return Array.from({length:n},()=>'');
+}
+
+// 指定した船の乗船者（釣座割当済み）を釣座番号順で取得
+function boardersOf(boatName){
+  return ps
+    .filter(p=>ga(p.id).boat===boatName)
+    .sort((a,b)=>(parseInt(ga(a.id).seat)||999)-(parseInt(ga(b.id).seat)||999));
+}
+
+// ============================
+// 成果物①：乗船名簿（船宿提出用）
+//   船単位 ／ 釣座・氏名・住所・TEL ／ 金銭情報なし
+//   実乗船者のみ（付添は本人の直下に「－」で表示・A案）
+// ============================
+function doPrintRoster(){
+  if(!ps.length){showN('データがありません','error');return}
   const now=new Date().toLocaleString('ja-JP');
   const eventDate='2026年8月3日（月）';
-  const payLabelMap={'':'未対応','sent':'送信済み','paid':'入金済み'};
-  const payBadgeClass={'':'badge-none','sent':'badge-sent','paid':'badge-paid'};
-
   let html='';
 
   BOATS.forEach(boatName=>{
-    const cfg=BOAT_CFG[boatName];
-    // 釣座に割り当て済みの参加者（釣座番号順）
-    const fishers=ps
-      .filter(p=>ga(p.id).boat===boatName)
-      .sort((a,b)=>{
-        const sa=parseInt(ga(a.id).seat)||999;
-        const sb=parseInt(ga(b.id).seat)||999;
-        return sa-sb;
-      });
+    const fishers=boardersOf(boatName);
+    if(!fishers.length)return; // 乗船者ゼロの船はページを作らない
 
-    // 付添席
-    const compEntries=[];
-    if(cfg.compSeats>0 && compAsgn[boatName]){
-      for(let i=1;i<=cfg.compSeats;i++){
-        const name=(compAsgn[boatName][i]||'').trim();
-        compEntries.push({seat:i, name});
-      }
-    }
-
-    const totalFisher=fishers.length;
-    const totalComp=compEntries.filter(c=>c.name).length;
-    const paidCnt=fishers.filter(p=>p.payStatus==='paid').length;
-
-    // 釣座テーブル行（釣座番号順、未割当は末尾）
-    const fisherRows=[];
+    let rows='';
+    let fisherCnt=0, compCnt=0;
     fishers.forEach(p=>{
       const a=ga(p.id);
-      const payVal=p.payStatus||'';
-      const hc=p.compType&&p.compType!=='本人のみ';
-      const ren=p.rental&&!p.rental.includes('無し')?'✔':'';
-      const tsh=p.tshirt&&!p.tshirt.includes('しない')?(p.tsize||'購入'):'';
-      const hasSeat=!!a.seat;
-      fisherRows.push(`<tr${hasSeat?'':' style="opacity:0.65"'}>
-        <td style="text-align:center;font-weight:700;color:${hasSeat?'#555':'#aaa'}">${a.seat||'-'}</td>
+      fisherCnt++;
+      rows+=`<tr>
+        <td style="text-align:center;font-weight:700">${a.seat||'-'}</td>
         <td style="font-weight:600">${escP(p.name)}</td>
-        <td>${hc?escP(p.compName||p.compCnt||'あり'):''}</td>
-        <td style="text-align:center">${ren}</td>
-        <td style="font-size:9pt">${tsh}</td>
-        <td style="text-align:center"><span class="pr-badge ${payBadgeClass[payVal]}">${payLabelMap[payVal]}</span></td>
-        <td class="pr-chk">□</td>
-      </tr>`);
+        <td style="font-size:9pt">${escP(p.address||'')}</td>
+        <td style="white-space:nowrap">${escP(p.phone||'')}</td>
+      </tr>`;
+      // 付添者（本人の直下・釣座欄は「└」・住所/TELは「－」）
+      splitCompNames(p).forEach(cn=>{
+        compCnt++;
+        rows+=`<tr class="pr-comp-row">
+          <td style="text-align:center;color:#999">└</td>
+          <td style="padding-left:14pt">${cn?escP(cn):'（付添）'} <span style="font-size:8pt;color:#888">付添</span></td>
+          <td style="text-align:center;color:#bbb">－</td>
+          <td style="text-align:center;color:#bbb">－</td>
+        </tr>`;
+      });
     });
-
-    // 空釣座行（名前なし）
-    const assignedSeats=new Set(fishers.map(p=>parseInt(ga(p.id).seat)).filter(Boolean));
-    for(let s=1;s<=cfg.seats;s++){
-      if(!assignedSeats.has(s)){
-        fisherRows.push(`<tr>
-          <td style="text-align:center;font-weight:700;color:#bbb">${s}</td>
-          <td style="color:#ccc">（空席）</td>
-          <td></td><td></td><td></td><td></td>
-          <td class="pr-chk"></td>
-        </tr>`);
-      }
-    }
-
-    // 付添テーブル行
-    let compSection='';
-    if(cfg.compSeats>0){
-      const compRows=compEntries.map(c=>`<tr>
-        <td style="text-align:center;font-weight:700;color:#555">${c.seat}</td>
-        <td style="font-weight:600">${c.name?escP(c.name):'<span style="color:#ccc">（空席）</span>'}</td>
-        <td class="pr-chk">${c.name?'□':''}</td>
-      </tr>`).join('');
-      compSection=`
-        <div class="pr-comp-hdr">付添席（${totalComp}/${cfg.compSeats}名）</div>
-        <table class="pr-table">
-          <thead><tr>
-            <th style="width:30pt">席</th>
-            <th>氏名</th>
-            <th style="width:28pt;text-align:center">出欠</th>
-          </tr></thead>
-          <tbody>${compRows}</tbody>
-        </table>`;
-    }
 
     html+=`<div class="pr-page">
       <div class="pr-hdr">
         <div>
-          <div class="pr-title">IKA de Night 第6回　${boatName}</div>
+          <div class="pr-title">IKA de Night 第6回　${boatName}　乗船名簿</div>
           <div class="pr-subtitle">${eventDate}　色浜（敦賀）</div>
         </div>
         <div class="pr-meta">
-          釣座：${totalFisher} / ${cfg.seats}名${cfg.compSeats>0?' ｜ 付添：'+totalComp+' / '+cfg.compSeats+'名':''}<br>
-          入金済み：${paidCnt}名<br>
+          乗船者：${fisherCnt}名${compCnt>0?'（付添 '+compCnt+'名）':''}<br>
           出力日時：${now}
         </div>
       </div>
       <table class="pr-table">
         <thead><tr>
-          <th style="width:28pt">釣座</th>
-          <th>氏名</th>
-          <th style="width:70pt">付添者</th>
-          <th style="width:36pt;text-align:center">レンタル</th>
-          <th style="width:52pt">Tシャツ</th>
-          <th style="width:56pt;text-align:center">入金</th>
-          <th style="width:28pt;text-align:center">出欠</th>
+          <th style="width:32pt;text-align:center">釣座</th>
+          <th style="width:120pt">氏名</th>
+          <th>住所</th>
+          <th style="width:96pt">TEL</th>
         </tr></thead>
-        <tbody>${fisherRows.join('')}</tbody>
+        <tbody>${rows}</tbody>
       </table>
-      ${compSection}
       <div class="pr-foot">
         <span>IKA de Night 管理ツール ｜ 中小企業診断士 三浦克彦</span>
-        <span>${boatName}　計 ${totalFisher}名（釣座）${cfg.compSeats>0?' ＋ '+totalComp+'名（付添）':''}</span>
+        <span>${boatName}　乗船者計 ${fisherCnt}名${compCnt>0?' ＋ 付添 '+compCnt+'名':''}</span>
       </div>
     </div>`;
   });
 
+  if(!html){showN('乗船者が割り当てられていません','error');return}
   document.getElementById('printRoster').innerHTML=html;
   window.print();
 }
 
-function escP(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+// ============================
+// 成果物②：受付金銭チェック表（内部用）
+//   船単位 ／ 釣座・氏名・入金・参加費・レンタル代・Tシャツ代・ロゴ協賛費
+//   □＝受付でチェック ／ 「－」＝対象外 ／ 入金欄「済」＝事前振込済み
+// ============================
+function doPrintPayment(){
+  if(!ps.length){showN('データがありません','error');return}
+  const now=new Date().toLocaleString('ja-JP');
+  const eventDate='2026年8月3日（月）';
+  let html='';
+
+  BOATS.forEach(boatName=>{
+    const fishers=boardersOf(boatName);
+    if(!fishers.length)return;
+
+    let rows='';
+    fishers.forEach(p=>{
+      const a=ga(p.id);
+      const paid   = p.payStatus==='paid';
+      const rental = p.rental && !p.rental.includes('無し');
+      const tshirt = p.tshirt && !p.tshirt.includes('しない');
+      const sponsor= (p.sponsorLogo||'').includes('協賛する');
+      const cell = on => on
+        ? '<td class="pr-chk">□</td>'
+        : '<td class="pr-chk pr-na">－</td>';
+      const sponsorNameHtml = (sponsor && p.sponsorName)
+        ? `<br><span style="font-size:8pt;color:#666">${escP(p.sponsorName)}</span>` : '';
+      rows+=`<tr>
+        <td style="text-align:center;font-weight:700">${a.seat||'-'}</td>
+        <td style="font-weight:600">${escP(p.name)}${sponsorNameHtml}</td>
+        <td style="text-align:center;font-weight:700;color:${paid?'#27500a':'#ccc'}">${paid?'済':''}</td>
+        <td class="pr-chk">□</td>
+        ${cell(rental)}
+        ${cell(tshirt)}
+        ${cell(sponsor)}
+      </tr>`;
+    });
+
+    const paidCnt   = fishers.filter(p=>p.payStatus==='paid').length;
+    const rentalCnt = fishers.filter(p=>p.rental&&!p.rental.includes('無し')).length;
+    const tshirtCnt = fishers.filter(p=>p.tshirt&&!p.tshirt.includes('しない')).length;
+    const sponsorCnt= fishers.filter(p=>(p.sponsorLogo||'').includes('協賛する')).length;
+
+    html+=`<div class="pr-page">
+      <div class="pr-hdr">
+        <div>
+          <div class="pr-title">IKA de Night 第6回　${boatName}　受付金銭チェック表</div>
+          <div class="pr-subtitle">${eventDate}　色浜（敦賀）｜ 受付内部用</div>
+        </div>
+        <div class="pr-meta">
+          乗船 ${fishers.length}名 ｜ 入金済 ${paidCnt}名<br>
+          レンタル ${rentalCnt} ／ Tシャツ ${tshirtCnt} ／ ロゴ協賛 ${sponsorCnt}<br>
+          出力日時：${now}
+        </div>
+      </div>
+      <table class="pr-table">
+        <thead><tr>
+          <th style="width:28pt;text-align:center">釣座</th>
+          <th>氏名</th>
+          <th style="width:34pt;text-align:center">入金<br><span style="font-weight:400;font-size:7pt">(船代)</span></th>
+          <th style="width:40pt;text-align:center">参加費<br><span style="font-weight:400;font-size:7pt">1,000</span></th>
+          <th style="width:46pt;text-align:center">レンタル代<br><span style="font-weight:400;font-size:7pt">2,000</span></th>
+          <th style="width:44pt;text-align:center">Tシャツ代<br><span style="font-weight:400;font-size:7pt">6,000</span></th>
+          <th style="width:46pt;text-align:center">ロゴ協賛費<br><span style="font-weight:400;font-size:7pt">5,000</span></th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="pr-foot">
+        <span>□＝受付でチェック ／ 「－」＝対象外 ／ 入金欄「済」＝船代の事前振込済み</span>
+        <span>${boatName}</span>
+      </div>
+    </div>`;
+  });
+
+  if(!html){showN('乗船者が割り当てられていません','error');return}
+  document.getElementById('printRoster').innerHTML=html;
+  window.print();
+}
 
 // ============================
 // 初期化
