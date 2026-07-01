@@ -216,7 +216,7 @@ select.psel.paid{background:var(--suc-bg);color:var(--suc-tx);border-color:var(-
       <input type="file" id="csvIn" accept=".csv" style="display:none">
       <button class="btn-imp" onclick="document.getElementById('csvIn').click()">📂 CSV読み込み</button>
       <button class="btn-exp" onclick="doExport()">💾 CSV書き出し</button>
-      <button class="btn-print" onclick="doPrintRoster()" title="船宿提出用の乗船名簿（釣座・氏名・住所・TEL）を船別に印刷します">🖨 乗船名簿（船宿用）</button>
+      <button class="btn-print" onclick="doPrintRoster()" title="船宿提出用の乗船名簿（釣座・氏名・生年月日・住所・TEL）を船別に印刷します">🖨 乗船名簿（船宿用）</button>
       <button class="btn-print" onclick="doPrintPayment()" title="受付用の金銭チェック表（参加費・レンタル・Tシャツ・ロゴ協賛費）を船別に印刷します">🖨 金銭チェック表（受付用）</button>
       <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
         <button class="btn-danger" id="clrBtn" onclick="doClear()" title="この端末のブラウザ上のデータのみ削除します。GitHubのデータは残ります。">🗑 端末のみ削除</button>
@@ -512,6 +512,7 @@ function mapP(hs,r){
     pref:gf(hs,r,'同船希望者名'),
     tshirt:gf(hs,r,'オリジナルTシャツ購入'),
     tsize:gf(hs,r,'サイズを選択してください'),
+    birthday:gf(hs,r,'生年月日'),
     address:gf(hs,r,'住所'),
     sponsorLogo:gf(hs,r,'協賛ロゴ掲載について'),
     sponsorName:gf(hs,r,'企業名（または掲載名）'),
@@ -1218,15 +1219,17 @@ function doPrintRoster(){
       rows+=`<tr>
         <td style="text-align:center;font-weight:700">${a.seat||'-'}</td>
         <td style="font-weight:600">${escP(p.name)}</td>
+        <td style="text-align:center;white-space:nowrap">${escP(p.birthday||'')}</td>
         <td style="font-size:9pt">${escP(p.address||'')}</td>
         <td style="white-space:nowrap">${escP(p.phone||'')}</td>
       </tr>`;
-      // 付添者（本人の直下・釣座欄は「└」・住所/TELは「－」）
+      // 付添者（本人の直下・釣座欄は「└」・生年月日/住所/TELは「－」）
       splitCompNames(p).forEach(cn=>{
         compCnt++;
         rows+=`<tr class="pr-comp-row">
           <td style="text-align:center;color:#999">└</td>
           <td style="padding-left:14pt">${cn?escP(cn):'（付添）'} <span style="font-size:8pt;color:#888">付添</span></td>
+          <td style="text-align:center;color:#bbb">－</td>
           <td style="text-align:center;color:#bbb">－</td>
           <td style="text-align:center;color:#bbb">－</td>
         </tr>`;
@@ -1247,9 +1250,10 @@ function doPrintRoster(){
       <table class="pr-table">
         <thead><tr>
           <th style="width:32pt;text-align:center">釣座</th>
-          <th style="width:120pt">氏名</th>
+          <th style="width:110pt">氏名</th>
+          <th style="width:64pt;text-align:center">生年月日</th>
           <th>住所</th>
-          <th style="width:96pt">TEL</th>
+          <th style="width:90pt">TEL</th>
         </tr></thead>
         <tbody>${rows}</tbody>
       </table>
