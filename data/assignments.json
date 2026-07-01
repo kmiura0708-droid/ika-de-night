@@ -16,7 +16,8 @@
       "payStatus": "paid",
       "address": "愛知県名古屋市中村区並木1-113　3A",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1980/12/18"
     },
     {
       "id": "2026/03/28 10:38:22",
@@ -34,7 +35,8 @@
       "payStatus": "paid",
       "address": "名古屋市西区五才美町63-1",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1962/07/14"
     },
     {
       "id": "2026/03/28 10:59:01",
@@ -52,7 +54,8 @@
       "payStatus": "paid",
       "address": "630-0136奈良県生駒市白庭台4-10-4-311",
       "sponsorLogo": "",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1973/01/20"
     },
     {
       "id": "2026/03/28 12:18:32",
@@ -70,7 +73,8 @@
       "payStatus": "paid",
       "address": "岐阜県土岐市肥田町浅野1078-91",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1981/04/23"
     },
     {
       "id": "2026/03/28 12:26:11",
@@ -88,7 +92,8 @@
       "payStatus": "paid",
       "address": "岐阜県土岐市肥田町浅野1078-91",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1982/02/25"
     },
     {
       "id": "2026/03/28 12:44:59",
@@ -106,7 +111,8 @@
       "payStatus": "paid",
       "address": "岐阜県多治見市北丘町5-2-56",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1978/07/08"
     },
     {
       "id": "2026/03/28 12:46:01",
@@ -124,7 +130,8 @@
       "payStatus": "paid",
       "address": "愛知県名古屋市緑区諸の木1-1002",
       "sponsorLogo": "協賛する（ロゴ掲載希望）",
-      "sponsorName": "ジャックポット"
+      "sponsorName": "ジャックポット",
+      "birthday": "1991/11/04"
     },
     {
       "id": "2026/03/28 13:25:40",
@@ -142,7 +149,8 @@
       "payStatus": "paid",
       "address": "愛知県名古屋市中川区南脇町1丁目2番地の1Patina烏森101号",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1998/01/13"
     },
     {
       "id": "2026/03/28 13:41:53",
@@ -160,7 +168,8 @@
       "payStatus": "paid",
       "address": "岐阜県可児市緑5-74",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1978/08/10"
     },
     {
       "id": "2026/03/28 13:59:00",
@@ -177,7 +186,8 @@
       "notes": "",
       "address": "名古屋市中村区稲葉地本通3-40-2",
       "sponsorLogo": "協賛する（ロゴ掲載希望）",
-      "sponsorName": "Groom hair"
+      "sponsorName": "Groom hair",
+      "birthday": "1978/04/29"
     },
     {
       "id": "2026/03/28 21:29:32",
@@ -195,7 +205,8 @@
       "payStatus": "paid",
       "address": "愛知県刈谷市築地町3-7-3クレバームーン203",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1985/07/30"
     },
     {
       "id": "2026/03/28 21:50:23",
@@ -213,7 +224,8 @@
       "payStatus": "paid",
       "address": "愛知県名古屋市中川区東春田3丁目14 グラシアB棟 202号室",
       "sponsorLogo": "協賛する（ロゴ掲載希望）",
-      "sponsorName": "フィッシングGO"
+      "sponsorName": "フィッシングGO",
+      "birthday": "2017/10/17"
     },
     {
       "id": "2026/03/29 9:34:44",
@@ -231,7 +243,8 @@
       "payStatus": "paid",
       "address": "豊田市畝部東町上中島106",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1987/07/16"
     },
     {
       "id": "2026/03/29 21:20:25",
@@ -249,7 +262,8 @@
       "payStatus": "paid",
       "address": "愛知県名古屋市中村区烏森町2丁目58番地 パークサイドハイム102",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1993/07/08"
     },
     {
       "id": "2026/03/29 22:22:18",
@@ -267,7 +281,8 @@
       "payStatus": "paid",
       "address": "名古屋市緑区上旭2-608",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1995/04/29"
     },
     {
       "id": "2026/03/31 18:04:01",
@@ -285,7 +300,8 @@
       "payStatus": "paid",
       "address": "名古屋市中川区千音寺3丁目2901",
       "sponsorLogo": "協賛する（ロゴ掲載希望）",
-      "sponsorName": "コザキ断熱株式会社"
+      "sponsorName": "コザキ断熱株式会社",
+      "birthday": "1979/02/11"
     },
     {
       "id": "2026/03/31 18:15:25",
@@ -303,7 +319,8 @@
       "payStatus": "paid",
       "address": "名古屋市中川区千音寺3-2901",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1977/01/03"
     },
     {
       "id": "2026/03/31 18:15:50",
@@ -321,7 +338,8 @@
       "payStatus": "paid",
       "address": "岐阜県大垣市笠木町149-3",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1968/10/05"
     },
     {
       "id": "2026/03/31 18:16:13",
@@ -339,7 +357,8 @@
       "payStatus": "paid",
       "address": "愛知県名古屋市守山区新守町210-2",
       "sponsorLogo": "協賛する（ロゴ掲載希望）",
-      "sponsorName": "有限会社蔵建"
+      "sponsorName": "有限会社蔵建",
+      "birthday": "1981/08/03"
     },
     {
       "id": "2026/03/31 18:16:36",
@@ -357,7 +376,8 @@
       "payStatus": "paid",
       "address": "名古屋市中川区千音寺3-2901",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "2008/05/13"
     },
     {
       "id": "2026/03/31 18:25:45",
@@ -375,7 +395,8 @@
       "payStatus": "paid",
       "address": "愛知県名古屋市中川区石場町2-39-2",
       "sponsorLogo": "協賛する（ロゴ掲載希望）",
-      "sponsorName": "臼田電設株式会社・高木鉄工"
+      "sponsorName": "臼田電設株式会社・高木鉄工",
+      "birthday": "1994/06/16"
     },
     {
       "id": "2026/03/31 18:37:58",
@@ -393,7 +414,8 @@
       "payStatus": "paid",
       "address": "名古屋市中川区大当郎1-1701-3",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1975/07/14"
     },
     {
       "id": "2026/03/31 18:56:34",
@@ -411,7 +433,8 @@
       "payStatus": "paid",
       "address": "名古屋市中川区五女子町1-79-1",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1981/09/02"
     },
     {
       "id": "2026/03/31 21:20:51",
@@ -429,7 +452,8 @@
       "payStatus": "paid",
       "address": "名古屋市中村区稲上町4-54-1",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1997/10/06"
     },
     {
       "id": "2026/03/31 21:54:03",
@@ -447,7 +471,8 @@
       "payStatus": "paid",
       "address": "名古屋市北区上飯田西町1-30-1 602",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1993/01/11"
     },
     {
       "id": "2026/03/31 22:04:49",
@@ -465,7 +490,8 @@
       "payStatus": "paid",
       "address": "愛知県名古屋市守山区小幡４−３−２１",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1972/07/12"
     },
     {
       "id": "2026/03/31 22:06:42",
@@ -483,7 +509,8 @@
       "payStatus": "paid",
       "address": "愛知県名古屋市中村区新富町5-1-7 リバービュー中村901号",
       "sponsorLogo": "協賛する（ロゴ掲載希望）",
-      "sponsorName": "(株)中村産業"
+      "sponsorName": "(株)中村産業",
+      "birthday": "1971/01/28"
     },
     {
       "id": "2026/03/31 22:31:15",
@@ -501,7 +528,8 @@
       "payStatus": "paid",
       "address": "名古屋市中村区向島町4-17-8",
       "sponsorLogo": "協賛する（ロゴ掲載希望）",
-      "sponsorName": "ハウスリッチ株式会社"
+      "sponsorName": "ハウスリッチ株式会社",
+      "birthday": "1986/02/05"
     },
     {
       "id": "2026/03/31 23:26:51",
@@ -518,7 +546,8 @@
       "notes": "",
       "address": "名古屋市中村区橋下町2の8 301",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1989/11/08"
     },
     {
       "id": "2026/04/01 0:33:35",
@@ -536,7 +565,8 @@
       "payStatus": "paid",
       "address": "名古屋市中村区長筬町1-44-1",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1982/10/04"
     },
     {
       "id": "2026/04/01 12:17:27",
@@ -554,7 +584,8 @@
       "payStatus": "paid",
       "address": "名古屋市中村区鴨付町１－４４栄ビル４０２",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1998/09/05"
     },
     {
       "id": "2026/04/01 12:31:09",
@@ -572,7 +603,8 @@
       "payStatus": "paid",
       "address": "愛知県名古屋市中村区京田町1-31",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1993/02/16"
     },
     {
       "id": "2026/04/01 12:36:14",
@@ -590,7 +622,8 @@
       "payStatus": "paid",
       "address": "名古屋市中村区向島町4-22-14",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1979/11/11"
     },
     {
       "id": "2026/04/01 15:41:34",
@@ -608,7 +641,8 @@
       "payStatus": "paid",
       "address": "瀬戸市白山町2-119-3",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1975/10/13"
     },
     {
       "id": "2026/04/01 16:20:10",
@@ -626,7 +660,8 @@
       "payStatus": "paid",
       "address": "岐阜県可児市緑5-74",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "2015/04/02"
     },
     {
       "id": "2026/04/01 18:50:54",
@@ -644,7 +679,8 @@
       "payStatus": "paid",
       "address": "名古屋市中村区上石川町1-9-2",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1989/05/19"
     },
     {
       "id": "2026/04/01 19:54:41",
@@ -662,7 +698,8 @@
       "payStatus": "paid",
       "address": "愛知県名古屋市中村区五反城町6丁目2番地",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1980/06/21"
     },
     {
       "id": "2026/04/01 20:00:27",
@@ -680,7 +717,8 @@
       "payStatus": "paid",
       "address": "愛知県一宮市開明字杁東郭5-3",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1981/02/12"
     },
     {
       "id": "2026/04/01 20:11:05",
@@ -698,7 +736,8 @@
       "payStatus": "paid",
       "address": "愛知県名古屋市昭和区雪見町2-7アンプルール302",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1998/03/23"
     },
     {
       "id": "2026/04/02 0:17:56",
@@ -716,7 +755,8 @@
       "payStatus": "paid",
       "address": "名古屋市中村区稲上町2-66-2",
       "sponsorLogo": "協賛する（ロゴ掲載希望）",
-      "sponsorName": "株式会社　Variar"
+      "sponsorName": "株式会社　Variar",
+      "birthday": "1987/05/03"
     },
     {
       "id": "2026/04/02 10:32:11",
@@ -734,7 +774,8 @@
       "payStatus": "paid",
       "address": "名古屋市中村区草薙町3−6　マンション草薙3A",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1972/10/19"
     },
     {
       "id": "2026/04/02 12:57:42",
@@ -752,7 +793,8 @@
       "payStatus": "paid",
       "address": "愛知県東海市名和町北之山１３番地７６",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "2026/03/05"
     },
     {
       "id": "2026/04/02 13:07:20",
@@ -770,7 +812,8 @@
       "payStatus": "paid",
       "address": "名古屋市昭和区車田町2-5-506",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1990/07/16"
     },
     {
       "id": "2026/04/03 7:37:16",
@@ -788,7 +831,8 @@
       "payStatus": "paid",
       "address": "瀬戸市白山町2-116",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1996/04/22"
     },
     {
       "id": "2026/04/03 8:08:04",
@@ -806,7 +850,8 @@
       "payStatus": "paid",
       "address": "瀬戸市白山町2丁目120-5",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1988/06/27"
     },
     {
       "id": "2026/04/03 11:36:39",
@@ -824,7 +869,8 @@
       "payStatus": "paid",
       "address": "愛知県西尾市一色町生田西高前112",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1974/04/28"
     },
     {
       "id": "2026/04/03 12:28:57",
@@ -842,7 +888,8 @@
       "payStatus": "paid",
       "address": "愛知県岡崎市樫山町市場36-2",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1971/08/03"
     },
     {
       "id": "2026/04/03 12:40:40",
@@ -860,7 +907,8 @@
       "payStatus": "paid",
       "address": "岡崎市上地1丁目43-12",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1965/12/04"
     },
     {
       "id": "2026/04/03 14:46:12",
@@ -878,7 +926,8 @@
       "payStatus": "paid",
       "address": "名古屋市中村区稲葉地町1-34-2",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1980/04/11"
     },
     {
       "id": "2026/04/03 18:01:27",
@@ -896,7 +945,8 @@
       "payStatus": "paid",
       "address": "岐阜県多治見市姫町5丁目1−288",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "2010/11/02"
     },
     {
       "id": "2026/04/03 21:31:55",
@@ -914,7 +964,8 @@
       "payStatus": "paid",
       "address": "愛知県あま市中萱津大坊45",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1991/12/21"
     },
     {
       "id": "2026/04/03 21:34:12",
@@ -932,7 +983,8 @@
       "payStatus": "paid",
       "address": "愛知県あま市中萱津大坊45",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1995/07/21"
     },
     {
       "id": "2026/04/03 22:44:34",
@@ -949,7 +1001,8 @@
       "notes": "",
       "address": "名古屋市中村区靖国町3-75 コーポミュー2B",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1989/12/03"
     },
     {
       "id": "2026/04/05 12:39:27",
@@ -967,7 +1020,8 @@
       "payStatus": "paid",
       "address": "浜松市中央区寺脇町421",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1994/07/10"
     },
     {
       "id": "2026/04/05 20:04:48",
@@ -985,7 +1039,8 @@
       "payStatus": "paid",
       "address": "名古屋市中村区上石川町5-4",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1991/06/09"
     },
     {
       "id": "2026/04/06 18:13:24",
@@ -1003,7 +1058,8 @@
       "payStatus": "paid",
       "address": "愛知県瀬戸市共栄通5-81-2",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1996/04/09"
     },
     {
       "id": "2026/04/06 19:24:06",
@@ -1021,7 +1077,8 @@
       "payStatus": "paid",
       "address": "愛知県名古屋市名東区社ヶ丘1ー503パビリオン本郷302号",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1996/06/02"
     },
     {
       "id": "2026/04/07 15:59:59",
@@ -1039,7 +1096,8 @@
       "payStatus": "paid",
       "address": "愛知県清須市西枇杷島町宮前２丁目10番地2",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1974/09/09"
     },
     {
       "id": "2026/04/08 14:36:12",
@@ -1057,7 +1115,8 @@
       "payStatus": "paid",
       "address": "名古屋市中村区二ツ橋町1－6－14",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1980/05/10"
     },
     {
       "id": "2026/04/08 15:12:00",
@@ -1075,7 +1134,8 @@
       "payStatus": "paid",
       "address": "愛知県一宮市木曽川町黒田字北宿五の切3番地グリーンリーフ101",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1998/12/30"
     },
     {
       "id": "2026/04/08 21:12:35",
@@ -1093,7 +1153,8 @@
       "payStatus": "paid",
       "address": "名古屋市中村区向島町4-22-14",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1980/04/03"
     },
     {
       "id": "2026/04/09 11:43:57",
@@ -1111,7 +1172,8 @@
       "payStatus": "paid",
       "address": "愛知県日進市米野木町下五反田80-103",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1982/02/26"
     },
     {
       "id": "2026/04/09 12:12:49",
@@ -1129,7 +1191,8 @@
       "payStatus": "paid",
       "address": "名古屋市中川区戸田明正1丁目1303",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1984/10/25"
     },
     {
       "id": "2026/04/09 12:15:30",
@@ -1147,7 +1210,8 @@
       "payStatus": "paid",
       "address": "名古屋市中川区戸田明正1丁目1303",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "2010/03/10"
     },
     {
       "id": "2026/04/09 12:33:14",
@@ -1165,7 +1229,8 @@
       "payStatus": "paid",
       "address": "愛知県あま市甚目寺須原72-8",
       "sponsorLogo": "協賛する（ロゴ掲載希望）",
-      "sponsorName": "株式会社　角田空調"
+      "sponsorName": "株式会社　角田空調",
+      "birthday": "1971/01/23"
     },
     {
       "id": "2026/04/09 12:35:43",
@@ -1183,7 +1248,8 @@
       "payStatus": "paid",
       "address": "名古屋市中村区亀島2-13-11-604",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1994/07/31"
     },
     {
       "id": "2026/04/09 12:54:57",
@@ -1201,7 +1267,8 @@
       "payStatus": "paid",
       "address": "愛知県名古屋市天白区表山1-118-203",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1976/07/09"
     },
     {
       "id": "2026/04/09 13:23:56",
@@ -1219,7 +1286,8 @@
       "payStatus": "paid",
       "address": "愛知県稲沢市平和町下起中378",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1990/09/22"
     },
     {
       "id": "2026/04/09 14:40:22",
@@ -1237,7 +1305,8 @@
       "payStatus": "paid",
       "address": "名古屋市守山区小幡４−３−２１",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "2001/05/31"
     },
     {
       "id": "2026/04/09 17:13:06",
@@ -1255,7 +1324,8 @@
       "payStatus": "paid",
       "address": "各務原市尾崎南町１-１１２",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1978/02/24"
     },
     {
       "id": "2026/04/09 17:26:35",
@@ -1273,7 +1343,8 @@
       "payStatus": "paid",
       "address": "岐阜県関市倉知1192",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1984/08/12"
     },
     {
       "id": "2026/04/09 17:56:01",
@@ -1291,7 +1362,8 @@
       "payStatus": "paid",
       "address": "愛知県名古屋市中川区赤星-3251",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1976/04/19"
     },
     {
       "id": "2026/04/09 19:16:02",
@@ -1309,7 +1381,8 @@
       "payStatus": "paid",
       "address": "名古屋市中川区新家3丁目3002番地4",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1983/07/15"
     },
     {
       "id": "2026/04/09 22:08:29",
@@ -1327,7 +1400,8 @@
       "payStatus": "paid",
       "address": "愛知県瀬戸市今林町279-1",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1974/01/24"
     },
     {
       "id": "2026/04/10 7:45:40",
@@ -1345,7 +1419,8 @@
       "payStatus": "paid",
       "address": "愛知県犬山市上野米野１１４２-３",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1991/02/10"
     },
     {
       "id": "2026/04/10 7:54:18",
@@ -1363,7 +1438,8 @@
       "payStatus": "paid",
       "address": "愛知県海部郡大治町西條字狐海道１０９ー1",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1978/08/15"
     },
     {
       "id": "2026/04/10 14:49:04",
@@ -1381,7 +1457,8 @@
       "payStatus": "paid",
       "address": "名古屋市中村区乾出町2-15シティハイツシャンベール308",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1997/04/26"
     },
     {
       "id": "2026/04/11 11:39:04",
@@ -1399,7 +1476,8 @@
       "payStatus": "paid",
       "address": "岐阜県美濃加茂市田島町3丁目5-13",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1993/02/20"
     },
     {
       "id": "2026/04/18 20:04:13",
@@ -1417,7 +1495,8 @@
       "payStatus": "paid",
       "address": "豊中市春日町5-1-2-702",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1977/05/27"
     },
     {
       "id": "2026/05/21 12:41:04",
@@ -1435,7 +1514,8 @@
       "payStatus": "paid",
       "address": "兵庫県尼崎市東塚口町1-15-1",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1985/06/22"
     },
     {
       "id": "2026/05/21 12:45:06",
@@ -1453,7 +1533,8 @@
       "payStatus": "paid",
       "address": "大阪府吹田市垂水町3-31-31",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1996/06/02"
     },
     {
       "id": "2026/05/21 13:01:20",
@@ -1471,7 +1552,8 @@
       "payStatus": "paid",
       "address": "京都府八幡市西山足立17-1",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "1978/10/20"
     },
     {
       "id": "2026/05/21 13:04:32",
@@ -1489,7 +1571,8 @@
       "payStatus": "paid",
       "address": "京都府八幡市西山足立17-7",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "birthday": "2012/11/22"
     },
     {
       "id": "2026/05/22 15:42:55",
@@ -1507,7 +1590,8 @@
       "payStatus": "paid",
       "address": "愛知県名古屋市中村区草薙町2-67-9",
       "sponsorLogo": "協賛する（ロゴ掲載希望）",
-      "sponsorName": "協賛希望ですが、掲載は不用"
+      "sponsorName": "協賛希望ですが、掲載は不用",
+      "birthday": "1984/09/05"
     }
   ],
   "asgn": {
@@ -1953,6 +2037,6 @@
       "2": "梶原　瑚可"
     }
   },
-  "savedAt": "2026-07-01T14:12:38.247Z",
+  "savedAt": "2026-07-01T14:29:07.716Z",
   "savedBy": "IKAdeNight管理ツール"
 }
