@@ -1447,47 +1447,47 @@
     },
     "2026/04/01 20:11:05": {
       "boat": "日吉丸",
-      "seat": "8",
+      "seat": "11",
       "seatType": "fishing"
     },
     "2026/04/02 0:17:56": {
       "boat": "日吉丸",
-      "seat": "9",
+      "seat": "12",
       "seatType": "fishing"
     },
     "2026/04/09 12:35:43": {
       "boat": "日吉丸",
-      "seat": "10",
+      "seat": "13",
       "seatType": "fishing"
     },
     "2026/03/28 12:44:59": {
       "boat": "日吉丸",
-      "seat": "11",
+      "seat": "14",
       "seatType": "fishing"
     },
     "2026/04/03 18:01:27": {
       "boat": "日吉丸",
-      "seat": "12",
+      "seat": "15",
       "seatType": "fishing"
     },
     "2026/03/28 13:41:53": {
       "boat": "日吉丸",
-      "seat": "13",
+      "seat": "16",
       "seatType": "fishing"
     },
     "2026/04/01 16:20:10": {
       "boat": "日吉丸",
-      "seat": "14",
+      "seat": "17",
       "seatType": "fishing"
     },
     "2026/04/03 21:31:55": {
       "boat": "日吉丸",
-      "seat": "15",
+      "seat": "18",
       "seatType": "fishing"
     },
     "2026/04/03 21:34:12": {
       "boat": "日吉丸",
-      "seat": "16",
+      "seat": "19",
       "seatType": "fishing"
     },
     "2026/04/03 7:37:16": {
@@ -1702,6 +1702,6 @@
       "2": "梶原　瑚可"
     }
   },
-  "savedAt": "2026-07-02T04:18:00.650Z",
+  "savedAt": "2026-07-02T08:19:01.774Z",
   "savedBy": "IKAdeNight管理ツール"
 }
