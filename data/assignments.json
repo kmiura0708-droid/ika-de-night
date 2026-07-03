@@ -1628,7 +1628,8 @@
       "address": "岐阜県多治見市北丘町5-2-56",
       "sponsorLogo": "協賛しない",
       "sponsorName": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/07/02 20:19:55",
@@ -2107,6 +2108,6 @@
       "2": "梶原　瑚可"
     }
   },
-  "savedAt": "2026-07-02T13:43:05.476Z",
+  "savedAt": "2026-07-03T09:02:30.233Z",
   "savedBy": "IKAdeNight管理ツール"
 }
