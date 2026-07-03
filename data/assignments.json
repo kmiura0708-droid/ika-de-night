@@ -177,8 +177,8 @@
       "type": "fisher",
       "phone": "09056116109",
       "compType": "本人+付添",
-      "compCnt": "１人",
-      "compName": "猪飼瑛心",
+      "compCnt": "",
+      "compName": "",
       "rental": "レンタル無し",
       "pref": "",
       "tshirt": "購入する",
@@ -1648,6 +1648,24 @@
       "sponsorLogo": "協賛する（ロゴ掲載希望）",
       "sponsorName": "株式会社マサミ設備",
       "notes": ""
+    },
+    {
+      "id": "2026/07/03 23:01:39",
+      "name": "肥田野　裕和",
+      "type": "fisher",
+      "phone": "070-9213-9835",
+      "compType": "本人のみ",
+      "compCnt": "",
+      "compName": "",
+      "rental": "レンタル希望",
+      "pref": "乗冨群馬",
+      "tshirt": "購入しない",
+      "tsize": "",
+      "birthday": "1980/02/16",
+      "address": "愛知県名古屋市中村区東宿町３丁目２９番地",
+      "sponsorLogo": "協賛しない",
+      "sponsorName": "",
+      "notes": ""
     }
   ],
   "asgn": {
@@ -2108,6 +2126,6 @@
       "2": "梶原　瑚可"
     }
   },
-  "savedAt": "2026-07-03T11:06:35.633Z",
+  "savedAt": "2026-07-03T22:56:51.514Z",
   "savedBy": "IKAdeNight管理ツール"
 }
