@@ -1699,62 +1699,62 @@
     },
     "2026/03/28 10:59:01": {
       "boat": "春定丸",
-      "seat": "2",
+      "seat": "15",
       "seatType": "fishing"
     },
     "2026/04/09 12:33:14": {
       "boat": "春定丸",
-      "seat": "6",
+      "seat": "12",
       "seatType": "fishing"
     },
     "2026/04/09 13:23:56": {
       "boat": "春定丸",
-      "seat": "7",
+      "seat": "13",
       "seatType": "fishing"
     },
     "2026/03/29 21:20:25": {
       "boat": "春定丸",
-      "seat": "4",
+      "seat": "21",
       "seatType": "fishing"
     },
     "2026/03/29 22:22:18": {
       "boat": "春定丸",
-      "seat": "5",
+      "seat": "20",
       "seatType": "fishing"
     },
     "2026/04/05 20:04:48": {
       "boat": "春定丸",
-      "seat": "16",
+      "seat": "10",
       "seatType": "fishing"
     },
     "2026/03/28 12:46:01": {
       "boat": "春定丸",
-      "seat": "12",
+      "seat": "3",
       "seatType": "fishing"
     },
     "2026/03/28 13:25:40": {
       "boat": "春定丸",
-      "seat": "10",
+      "seat": "6",
       "seatType": "fishing"
     },
     "2026/03/31 21:20:51": {
       "boat": "春定丸",
-      "seat": "9",
+      "seat": "5",
       "seatType": "fishing"
     },
     "2026/04/10 14:49:04": {
       "boat": "春定丸",
-      "seat": "11",
+      "seat": "2",
       "seatType": "fishing"
     },
     "2026/04/01 19:54:41": {
       "boat": "春定丸",
-      "seat": "14",
+      "seat": "8",
       "seatType": "fishing"
     },
     "2026/04/01 20:00:27": {
       "boat": "春定丸",
-      "seat": "15",
+      "seat": "9",
       "seatType": "fishing"
     },
     "2026/04/09 11:43:57": {
@@ -2079,32 +2079,32 @@
     },
     "2026/04/18 20:04:13": {
       "boat": "春定丸",
-      "seat": "3",
+      "seat": "14",
       "seatType": "fishing"
     },
     "2026/05/21 12:41:04": {
       "boat": "春定丸",
-      "seat": "18",
+      "seat": "16",
       "seatType": "fishing"
     },
     "2026/05/21 12:45:06": {
       "boat": "春定丸",
-      "seat": "19",
+      "seat": "17",
       "seatType": "fishing"
     },
     "2026/05/21 13:01:20": {
       "boat": "春定丸",
-      "seat": "21",
+      "seat": "19",
       "seatType": "fishing"
     },
     "2026/05/21 13:04:32": {
       "boat": "春定丸",
-      "seat": "20",
+      "seat": "18",
       "seatType": "fishing"
     },
     "2026/05/22 15:42:55": {
       "boat": "春定丸",
-      "seat": "13",
+      "seat": "7",
       "seatType": "fishing"
     },
     "2026/07/02 19:37:07": {
@@ -2124,12 +2124,12 @@
     },
     "2026/07/03 23:01:39": {
       "boat": "春定丸",
-      "seat": "17",
+      "seat": "11",
       "seatType": "fishing"
     },
     "2026/07/05 17:54:57": {
       "boat": "春定丸",
-      "seat": "8",
+      "seat": "4",
       "seatType": "fishing"
     }
   },
@@ -2154,6 +2154,6 @@
       "2": "梶原　瑚可"
     }
   },
-  "savedAt": "2026-07-05T11:05:52.861Z",
+  "savedAt": "2026-07-05T11:13:51.671Z",
   "savedBy": "IKAdeNight管理ツール"
 }
