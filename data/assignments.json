@@ -176,7 +176,7 @@
       "name": "猪飼宏幸",
       "type": "fisher",
       "phone": "09056116109",
-      "compType": "本人+付添",
+      "compType": "本人のみ",
       "compCnt": "",
       "compName": "",
       "rental": "レンタル無し",
@@ -1666,42 +1666,60 @@
       "sponsorLogo": "協賛しない",
       "sponsorName": "",
       "notes": ""
+    },
+    {
+      "id": "2026/07/05 17:54:57",
+      "name": "竹本 龍馬",
+      "type": "fisher",
+      "phone": "08038606973",
+      "compType": "本人のみ",
+      "compCnt": "",
+      "compName": "",
+      "rental": "レンタル希望",
+      "pref": "",
+      "tshirt": "購入しない",
+      "tsize": "",
+      "birthday": "1988/07/07",
+      "address": "名古屋市中村区 稲葉地本通り1-30-501",
+      "sponsorLogo": "協賛しない",
+      "sponsorName": "",
+      "notes": ""
     }
   ],
   "asgn": {
     "2026/03/28 13:59:00": {
+      "boat": "",
+      "seat": "",
+      "seatType": ""
+    },
+    "2026/04/01 0:33:35": {
       "boat": "春定丸",
       "seat": "1",
       "seatType": "fishing"
     },
-    "2026/04/01 0:33:35": {
+    "2026/03/28 10:59:01": {
       "boat": "春定丸",
       "seat": "2",
       "seatType": "fishing"
     },
-    "2026/03/28 10:59:01": {
-      "boat": "春定丸",
-      "seat": "3",
-      "seatType": "fishing"
-    },
     "2026/04/09 12:33:14": {
-      "boat": "春定丸",
-      "seat": "5",
-      "seatType": "fishing"
-    },
-    "2026/04/09 13:23:56": {
       "boat": "春定丸",
       "seat": "6",
       "seatType": "fishing"
     },
+    "2026/04/09 13:23:56": {
+      "boat": "春定丸",
+      "seat": "7",
+      "seatType": "fishing"
+    },
     "2026/03/29 21:20:25": {
       "boat": "春定丸",
-      "seat": "8",
+      "seat": "4",
       "seatType": "fishing"
     },
     "2026/03/29 22:22:18": {
       "boat": "春定丸",
-      "seat": "7",
+      "seat": "5",
       "seatType": "fishing"
     },
     "2026/04/05 20:04:48": {
@@ -2061,7 +2079,7 @@
     },
     "2026/04/18 20:04:13": {
       "boat": "春定丸",
-      "seat": "4",
+      "seat": "3",
       "seatType": "fishing"
     },
     "2026/05/21 12:41:04": {
@@ -2108,6 +2126,11 @@
       "boat": "春定丸",
       "seat": "17",
       "seatType": "fishing"
+    },
+    "2026/07/05 17:54:57": {
+      "boat": "春定丸",
+      "seat": "8",
+      "seatType": "fishing"
     }
   },
   "compAsgn": {
@@ -2131,6 +2154,6 @@
       "2": "梶原　瑚可"
     }
   },
-  "savedAt": "2026-07-04T05:59:46.870Z",
+  "savedAt": "2026-07-05T11:05:09.610Z",
   "savedBy": "IKAdeNight管理ツール"
 }
