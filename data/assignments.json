@@ -1668,7 +1668,8 @@
       "address": "愛知県名古屋市中村区東宿町３丁目２９番地",
       "sponsorLogo": "協賛しない",
       "sponsorName": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/07/05 17:54:57",
@@ -2154,6 +2155,6 @@
     },
     "春定丸": {}
   },
-  "savedAt": "2026-07-08T01:26:27.114Z",
+  "savedAt": "2026-07-08T07:12:42.441Z",
   "savedBy": "IKAdeNight管理ツール"
 }
