@@ -1688,6 +1688,25 @@
       "sponsorLogo": "協賛しない",
       "sponsorName": "",
       "notes": ""
+    },
+    {
+      "id": "2026/07/08 16:32:40",
+      "name": "古川喬也",
+      "type": "fisher",
+      "phone": "09099252016",
+      "compType": "本人+付添",
+      "compCnt": "2人",
+      "compName": "古川真由美　古川暁士",
+      "rental": "レンタル希望",
+      "pref": "古川真由美　古川暁士",
+      "tshirt": "購入しない",
+      "tsize": "",
+      "birthday": "2010/10/27",
+      "address": "愛知県あま市花長川内42",
+      "sponsorLogo": "協賛しない",
+      "sponsorName": "",
+      "notes": "",
+      "payStatus": "paid"
     }
   ],
   "asgn": {
@@ -2155,6 +2174,6 @@
     },
     "春定丸": {}
   },
-  "savedAt": "2026-07-08T07:12:42.441Z",
+  "savedAt": "2026-07-08T08:29:26.049Z",
   "savedBy": "IKAdeNight管理ツール"
 }
