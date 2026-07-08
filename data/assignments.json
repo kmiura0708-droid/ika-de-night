@@ -1003,7 +1003,8 @@
       "birthday": "1989/12/03",
       "address": "名古屋市中村区靖国町3-75 コーポミュー2B",
       "sponsorLogo": "協賛しない",
-      "sponsorName": ""
+      "sponsorName": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/04/05 12:39:27",
@@ -1610,7 +1611,8 @@
       "address": "愛知県名古屋市千種区古出来3-3-1-1301",
       "sponsorLogo": "協賛しない",
       "sponsorName": "",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/07/02 19:37:07",
@@ -1647,7 +1649,8 @@
       "address": "愛知県日進市赤池町箕ノ手2-581",
       "sponsorLogo": "協賛する（ロゴ掲載希望）",
       "sponsorName": "株式会社マサミ設備",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     },
     {
       "id": "2026/07/03 23:01:39",
@@ -2154,6 +2157,6 @@
       "2": "梶原　瑚可"
     }
   },
-  "savedAt": "2026-07-05T11:13:51.671Z",
+  "savedAt": "2026-07-08T01:19:54.746Z",
   "savedBy": "IKAdeNight管理ツール"
 }
