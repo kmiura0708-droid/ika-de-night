@@ -187,7 +187,8 @@
       "birthday": "1978/04/29",
       "address": "名古屋市中村区稲葉地本通3-40-2",
       "sponsorLogo": "協賛する（ロゴ掲載希望）",
-      "sponsorName": "Groom hair"
+      "sponsorName": "Groom hair",
+      "payStatus": "paid"
     },
     {
       "id": "2026/03/28 21:29:32",
@@ -2182,6 +2183,6 @@
     },
     "春定丸": {}
   },
-  "savedAt": "2026-07-11T01:27:48.044Z",
+  "savedAt": "2026-07-11T01:28:05.907Z",
   "savedBy": "IKAdeNight管理ツール"
 }
