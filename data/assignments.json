@@ -1709,6 +1709,24 @@
       "sponsorName": "",
       "notes": "",
       "payStatus": "paid"
+    },
+    {
+      "id": "2026/07/17 9:14:04",
+      "name": "河合　浄",
+      "type": "fisher",
+      "phone": "0524117835",
+      "compType": "本人のみ",
+      "compCnt": "",
+      "compName": "",
+      "rental": "レンタル無し",
+      "pref": "",
+      "tshirt": "購入しない",
+      "tsize": "",
+      "birthday": "1957/11/24",
+      "address": "名古屋市中村区中村町9-104-2",
+      "sponsorLogo": "協賛する（ロゴ掲載希望）",
+      "sponsorName": "河合製袋株式会社",
+      "notes": ""
     }
   ],
   "asgn": {
@@ -2023,9 +2041,9 @@
       "seatType": "fishing"
     },
     "2026/04/02 12:57:42": {
-      "boat": "竹宝丸",
-      "seat": "17",
-      "seatType": "fishing"
+      "boat": "",
+      "seat": "",
+      "seatType": ""
     },
     "2026/04/10 7:45:40": {
       "boat": "竹宝丸",
@@ -2044,33 +2062,33 @@
     },
     "2026/03/31 22:06:42": {
       "boat": "高栄丸",
-      "seat": "2",
+      "seat": "3",
       "seatType": "fishing"
     },
     "2026/04/02 10:32:11": {
       "boat": "高栄丸",
-      "seat": "3",
+      "seat": "4",
       "seatType": "fishing"
     },
     "2026/04/03 11:36:39": {
       "boat": "高栄丸",
-      "seat": "4",
+      "seat": "5",
       "seatType": "fishing"
     },
     "2026/04/03 12:40:40": {
       "boat": "高栄丸",
-      "seat": "5",
+      "seat": "6",
       "seatType": "fishing"
     },
     "2026/04/05 12:39:27": {
       "boat": "高栄丸",
-      "seat": "6",
+      "seat": "7",
       "seatType": "fishing"
     },
     "2026/04/09 12:54:57": {
-      "boat": "高栄丸",
-      "seat": "7",
-      "seatType": "fishing"
+      "boat": "",
+      "seat": "",
+      "seatType": ""
     },
     "2026/03/31 22:31:15": {
       "boat": "高栄丸",
@@ -2161,6 +2179,11 @@
       "boat": "甚五郎丸",
       "seat": "16",
       "seatType": "fishing"
+    },
+    "2026/07/17 9:14:04": {
+      "boat": "高栄丸",
+      "seat": "2",
+      "seatType": "fishing"
     }
   },
   "compAsgn": {
@@ -2183,6 +2206,6 @@
     },
     "春定丸": {}
   },
-  "savedAt": "2026-07-11T01:28:05.907Z",
+  "savedAt": "2026-07-17T00:16:11.458Z",
   "savedBy": "IKAdeNight管理ツール"
 }
