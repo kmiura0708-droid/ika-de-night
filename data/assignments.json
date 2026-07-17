@@ -1726,7 +1726,8 @@
       "address": "名古屋市中村区中村町9-104-2",
       "sponsorLogo": "協賛する（ロゴ掲載希望）",
       "sponsorName": "河合製袋株式会社",
-      "notes": ""
+      "notes": "",
+      "payStatus": "paid"
     }
   ],
   "asgn": {
@@ -2206,6 +2207,6 @@
     },
     "春定丸": {}
   },
-  "savedAt": "2026-07-17T00:16:11.458Z",
+  "savedAt": "2026-07-17T00:18:28.826Z",
   "savedBy": "IKAdeNight管理ツール"
 }
